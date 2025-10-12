@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.gabr</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>E-commerce</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>E-commerce</name>
+	<description>E-commerce API project</description>
 	<url/>
 	<licenses>
 		<license/>
