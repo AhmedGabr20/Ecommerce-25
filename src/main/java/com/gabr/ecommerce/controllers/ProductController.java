@@ -29,8 +29,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductDto>> getAll(){
-        return ResponseEntity.ok(productService.getAll());
+    public ResponseEntity<List<ProductDto>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "id")  String sortBy
+    ){
+        return ResponseEntity.ok(productService.getAll(page,size,sortBy));
     }
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> update(@PathVariable Long id , @RequestBody ProductDto dto){
@@ -40,5 +44,9 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable Long id){
         productService.delete(id);
         return ResponseEntity.ok().build();
+    }
+    @GetMapping("/search")
+    public ResponseEntity<List<ProductDto>> search(@RequestParam String name){
+        return ResponseEntity.ok(productService.getByName(name));
     }
 }

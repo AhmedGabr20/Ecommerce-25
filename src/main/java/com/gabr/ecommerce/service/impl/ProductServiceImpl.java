@@ -6,9 +6,11 @@ import com.gabr.ecommerce.repository.ProductRepository;
 import com.gabr.ecommerce.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
@@ -35,7 +37,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto create(ProductDto dto) {
+        log.info("Creating product: {}", dto.getName());
         Product savedProduct = productRepository.save(toEntity(dto));
+        log.info("Created product id={}", savedProduct.getId());
         return toDto(savedProduct);
     }
 
@@ -63,8 +67,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductDto> getAll() {
+    public List<ProductDto> getAll(int page, int size, String sortBy) {
     //    return productRepository.findAll().stream().map(this::toDto).collect(Collectors.toList());
         return productRepository.findAll().stream().map(this::toDto).toList();
+    }
+
+    @Override
+    public List<ProductDto> getByName(String name) {
+        return productRepository.findByNameContainingIgnoreCase(name).stream().map(this::toDto).toList();
     }
 }
