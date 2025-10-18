@@ -10,7 +10,8 @@ public interface ProductService {
         ProductDto update(Long id, ProductDto dto);
         ProductDto getById(Long id);
         void delete(Long id);
-        List<ProductDto> getAll();
+        List<ProductDto> getAll(int page, int size, String sortBy);
+    public List<ProductDto> getByName(String name);
 }
 
 

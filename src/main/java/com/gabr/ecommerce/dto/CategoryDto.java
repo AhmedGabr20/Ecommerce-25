@@ -1,0 +1,19 @@
+package com.gabr.ecommerce.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class CategoryDto {
+
+    private Long id;
+    @NotBlank(message = "name required")
+    private String name;
+
+}

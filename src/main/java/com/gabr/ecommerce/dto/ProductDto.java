@@ -22,5 +22,9 @@ public class ProductDto {
 
     @NotNull @Min(value = 0, message = "stock must be >= 0")
     private Integer stock;
+    @NotNull(message = "Category ID is required")
+    private Long categoryId;
+
+    private String categoryName;
 }
 
