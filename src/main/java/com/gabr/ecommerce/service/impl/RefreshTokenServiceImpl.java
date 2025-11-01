@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -24,13 +25,18 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Override
     public RefreshToken createRefreshToken(AppUser user) {
-        String refreshJwt = jwtService.generateRefreshToken(user);
+        Optional<RefreshToken> existingToken = refreshTokenRepository.findByUser(user);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-                .user(user)
-                .token(refreshJwt)
-                .expiryDate(Instant.now().plus(7, ChronoUnit.DAYS))
-                .build();
+        if (existingToken.isPresent()) {
+            refreshTokenRepository.delete(existingToken.get());
+        }
+            String refreshJwt = jwtService.generateRefreshToken(user);
+
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .user(user)
+                    .token(refreshJwt)
+                    .expiryDate(Instant.now().plus(7, ChronoUnit.DAYS))
+                    .build();
         return refreshTokenRepository.save(refreshToken);
     }
 

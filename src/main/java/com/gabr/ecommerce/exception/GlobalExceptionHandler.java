@@ -1,6 +1,7 @@
 package com.gabr.ecommerce.exception;
 
 
+import com.gabr.ecommerce.dto.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,31 +19,38 @@ record ErrorResponse(String error, String message, int status) {}
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(EntityNotFoundException ex){
+    public ResponseEntity<ApiResponse<?>> handleNotFound(EntityNotFoundException ex){
         log.error("Not Found", ex);
-        return ResponseEntity.status(404).body(new ErrorResponse("Not Found", ex.getMessage(), HttpStatus.NOT_FOUND.value()));
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex){
+    public ResponseEntity<ApiResponse<?>> handleValidation(MethodArgumentNotValidException ex){
         String msg = ex.getBindingResult().getFieldErrors().stream()
                 .map(e -> e.getField() + ": " + e.getDefaultMessage())
                 .collect(Collectors.joining(", "));
         log.error("Validation Error: {}", msg);
-        return ResponseEntity.badRequest().body(new ErrorResponse("Validation Error", msg, 400));
+        return ResponseEntity.badRequest().body(ApiResponse.error(msg));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleOthers(Exception ex){
+    public ResponseEntity<ApiResponse<?>> handleOthers(Exception ex){
         log.error("Internal Error", ex);
-        return ResponseEntity.status(500).body(new ErrorResponse("Internal Error", ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value()));
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error("Internal Error : "+ ex.getMessage()));
     }
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentials(BadCredentialsException ex) {
+    public ResponseEntity<ApiResponse<?>> handleBadCredentials(BadCredentialsException ex) {
         log.warn("Invalid login attempt: {}", ex.getMessage());
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
-                .body(new ErrorResponse("Invalid username or password",ex.getMessage(),HttpStatus.UNAUTHORIZED.value()));
+                .body(ApiResponse.error("Invalid username or password"));
+    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiResponse<?>> handleRuntime(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiResponse.error(ex.getMessage()));
     }
 
 }

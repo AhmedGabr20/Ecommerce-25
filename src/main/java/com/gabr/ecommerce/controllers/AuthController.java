@@ -9,6 +9,9 @@ import com.gabr.ecommerce.entity.Role;
 import com.gabr.ecommerce.repository.UserRepository;
 import com.gabr.ecommerce.security.JwtService;
 import com.gabr.ecommerce.service.RefreshTokenService;
+import com.gabr.ecommerce.service.impl.EmailServiceImpl;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,8 +34,9 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
+    private final EmailServiceImpl emailService;
 
-
+    @Operation(summary = "Login user", security = @SecurityRequirement(name = "none"))
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@Valid @RequestBody AuthRequest request) {
         AppUser user = AppUser.builder()
@@ -41,6 +45,7 @@ public class AuthController {
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
+        emailService.sendWelcomeEmail(request.getUsername(),"Ahmed Gabr");
 
         String accessToken = jwtService.generateAccessToken(user);
     //    String refreshToken = jwtService.generateRefreshToken(user);
@@ -56,6 +61,7 @@ public class AuthController {
                                 .build())
         );
     }
+    @Operation(summary = "Login user", security = @SecurityRequirement(name = "none"))
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         authenticationManager.authenticate(
