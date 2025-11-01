@@ -156,3 +156,8 @@ E:/Projects/Spring boot Test/demo
 - Configure CI (e.g., GitHub Actions) for build and test.
 - Document error response formats from `GlobalExceptionHandler`.
 - Provide sample Postman collection.
+
+
+# REDIS 
+- redis-cli ping
+- sudo service redis-server start

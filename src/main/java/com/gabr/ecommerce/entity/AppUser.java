@@ -1,10 +1,13 @@
 package com.gabr.ecommerce.entity;
 
+import com.gabr.ecommerce.dto.RefreshToken;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -20,4 +23,7 @@ public class AppUser {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role ;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RefreshToken> refreshTokens;
 }
