@@ -45,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    @CacheEvict(value = "products", allEntries = true)
+//    @CacheEvict(value = "products", allEntries = true)
     @Override
     public ProductDto create(ProductDto dto) {
         if (dto.getCategoryId() == null) {
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    @Cacheable("products")
+   // @Cacheable("products")
     @Override
     public List<ProductDto> getAll(int page, int size, String sortBy) {
         return productRepository.findAll().stream().map(this::toDto).toList();

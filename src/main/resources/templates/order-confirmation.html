@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f9fafb; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <div style="background-color: #28a745; color: white; text-align: center; padding: 15px 0;">
+        <h2 style="margin: 0;">Order Confirmation</h2>
+    </div>
+    <div style="padding: 25px;">
+        <h3 style="color: #333;">Thank you for your order! 🎉</h3>
+        <p style="font-size: 15px; color: #555;">
+            Your order <b>#<span th:text="${orderId}">12345</span></b> has been placed successfully.
+        </p>
+        <p style="font-size: 15px; color: #555;">
+            <b>Total Amount:</b> $<span th:text="${total}">0.00</span>
+        </p>
+
+        <a th:href="${orderUrl}"
+           style="display:inline-block; background-color:#28a745; color:white; padding:10px 20px; border-radius:5px; text-decoration:none; margin-top:10px;">
+            View Order Details
+        </a>
+
+        <p style="font-size:13px; color:#999; margin-top:30px;">
+            If you have any questions about your order, feel free to contact us at
+            <a th:href="'mailto:' + ${supportEmail}" style="color:#007bff;" th:text="${supportEmail}">support@ecommerce.com</a>.
+        </p>
+    </div>
+    <div style="background-color:#f1f1f1; text-align:center; padding:10px; font-size:12px; color:#777;">
+        © 2025 E-Commerce App. All rights reserved.
+    </div>
+</div>
+</body>
+</html>
