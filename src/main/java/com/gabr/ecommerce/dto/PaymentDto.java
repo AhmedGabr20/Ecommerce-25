@@ -1,19 +1,21 @@
 package com.gabr.ecommerce.dto;
 
-import com.gabr.ecommerce.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AuthResponse {
+public class PaymentDto {
     private Long id;
-    private String accessToken;
-    private String refreshToken;
-    private String username;
-    private Role role;
+    private Long orderId;
+    private String method;
+    private String status;
+    private Double amount;
+    private LocalDateTime paymentDate;
 }

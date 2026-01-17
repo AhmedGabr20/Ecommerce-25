@@ -54,6 +54,7 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.success("User registered successfully",
                         AuthResponse.builder()
+                                .id(user.getId())
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken.getToken())
                                 .username(user.getUsername())
@@ -75,6 +76,7 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.success("Login successful",
                         AuthResponse.builder()
+                                .id(user.getId())
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken.getToken())
                                 .username(user.getUsername())
@@ -96,6 +98,7 @@ public class AuthController {
         return ResponseEntity.ok(
                 ApiResponse.success("Access token refreshed",
                         AuthResponse.builder()
+                                .id(user.getId())
                                 .accessToken(newAccessToken)
                                 .refreshToken(refreshToken)
                                 .username(user.getUsername())

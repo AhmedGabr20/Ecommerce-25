@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -45,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    @CacheEvict(value = "products", allEntries = true)
+//    @CacheEvict(value = "products", allEntries = true)
     @Override
     public ProductDto create(ProductDto dto) {
         if (dto.getCategoryId() == null) {
@@ -81,10 +84,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
-    @Cacheable("products")
+   // @Cacheable("products")
     @Override
     public List<ProductDto> getAll(int page, int size, String sortBy) {
-        return productRepository.findAll().stream().map(this::toDto).toList();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
+        return productRepository.findAll(pageable).getContent().stream().map(this::toDto).toList();
     }
 
     @Override

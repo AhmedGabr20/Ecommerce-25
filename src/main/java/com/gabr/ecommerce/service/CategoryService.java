@@ -10,5 +10,5 @@ public interface CategoryService {
     CategoryDto getById(Long id);
     void delete(Long id);
     List<CategoryDto> getAll(int page, int size, String sortBy);
-    public List<CategoryDto> getByName(String name);
+    List<CategoryDto> getByName(String name);
 }

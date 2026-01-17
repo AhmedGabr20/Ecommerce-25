@@ -46,7 +46,7 @@ Using the Maven Wrapper on Windows PowerShell/Command Prompt from the project ro
 
 Once running:
 - API base URL: `http://localhost:8080`
-- Swagger UI: `http://localhost:8080/swagger-ui` (or `/swagger-ui/index.html`)
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html` (or `/swagger-ui/index.html`)
 - OpenAPI spec (JSON): `http://localhost:8080/v3/api-docs`
 - H2 Console: `http://localhost:8080/h2-console` (JDBC URL `jdbc:h2:file:./data/testdb`, user `sa`, empty password)
 

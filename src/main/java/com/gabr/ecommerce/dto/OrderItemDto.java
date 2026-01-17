@@ -1,6 +1,5 @@
 package com.gabr.ecommerce.dto;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,9 +9,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryDto {
-
-    private Long id;
-    private String name;
-
+public class OrderItemDto {
+    private Long productId;
+    private String productName;
+    private int quantity;
+    private double price;
 }

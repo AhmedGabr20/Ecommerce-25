@@ -8,6 +8,8 @@ import com.gabr.ecommerce.service.CategoryService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,18 +20,6 @@ import java.util.List;
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private CategoryDto toCategoryDto(Category category) {
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(category.getId());
-        categoryDto.setName(category.getName());
-        return categoryDto;
-    }
-    private Category toCategory(CategoryDto categoryDto) {
-        Category category = new Category();
-        category.setId(categoryDto.getId());
-        category.setName(categoryDto.getName());
-        return category;
-    }
 
     @Override
     public CategoryDto create(CategoryDto dto) {
@@ -41,7 +31,11 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDto update(Long id, CategoryDto dto) {
-        return null;
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+
+        category.setName(dto.getName());
+        return toCategoryDto(categoryRepository.save(category));
     }
 
     @Override
@@ -51,16 +45,35 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Long id) {
-
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+        categoryRepository.delete(category);
     }
 
     @Override
     public List<CategoryDto> getAll(int page, int size, String sortBy) {
-        return List.of();
+        return categoryRepository.findAll(PageRequest.of(page,size, Sort.by(sortBy)))
+                .map(this::toCategoryDto).toList();
     }
 
     @Override
     public List<CategoryDto> getByName(String name) {
-        return List.of();
+        return categoryRepository.findAll().stream()
+                .filter(c -> c.getName().toLowerCase().contains(name.toLowerCase()))
+                .map(this::toCategoryDto)
+                .toList();
+    }
+
+    private CategoryDto toCategoryDto(Category category) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(category.getId());
+        categoryDto.setName(category.getName());
+        return categoryDto;
+    }
+    private Category toCategory(CategoryDto categoryDto) {
+        Category category = new Category();
+        category.setId(categoryDto.getId());
+        category.setName(categoryDto.getName());
+        return category;
     }
 }
