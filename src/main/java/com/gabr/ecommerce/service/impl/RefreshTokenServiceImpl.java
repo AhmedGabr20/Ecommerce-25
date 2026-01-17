@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
@@ -29,6 +29,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
         if (existingToken.isPresent()) {
             refreshTokenRepository.delete(existingToken.get());
+            refreshTokenRepository.flush();
         }
             String refreshJwt = jwtService.generateRefreshToken(user);
 

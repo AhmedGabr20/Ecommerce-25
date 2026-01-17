@@ -2,15 +2,13 @@ package com.gabr.ecommerce.entity;
 
 import com.gabr.ecommerce.dto.RefreshToken;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = "refreshTokens")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
