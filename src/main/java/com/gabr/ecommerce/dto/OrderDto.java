@@ -1,5 +1,6 @@
 package com.gabr.ecommerce.dto;
 
+import com.gabr.ecommerce.constant.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +17,7 @@ public class OrderDto {
     private Long id;
     private Long userId;
     private Double totalPrice;
-    private String status;
+    private OrderStatus status;
     private LocalDateTime createdAt;
     private List<OrderItemDto> items;
 }

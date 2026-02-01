@@ -1,8 +1,11 @@
 package com.gabr.ecommerce.service.impl;
 
+import com.gabr.ecommerce.constant.OrderStatus;
 import com.gabr.ecommerce.dto.PaymentDto;
 import com.gabr.ecommerce.entity.Order;
 import com.gabr.ecommerce.entity.Payment;
+import com.gabr.ecommerce.exception.BusinessException;
+import com.gabr.ecommerce.exception.ErrorCode;
 import com.gabr.ecommerce.repository.OrderRepository;
 import com.gabr.ecommerce.repository.PaymentRepository;
 import com.gabr.ecommerce.service.EmailService;
@@ -25,8 +28,16 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto processPayment(Long orderId, String method) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        if (paymentRepository.existsByOrderId(orderId)) {
+            throw new BusinessException(ErrorCode.PAYMENT_ALREADY_EXISTS);
+        }
+
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
         // simulate success (you can expand to actual integration later)
+        if (order.getStatus() == OrderStatus.PAID) {
+            throw new BusinessException(ErrorCode.ORDER_ALREADY_PAID);
+        }
+
         Payment payment = Payment.builder()
                 .order(order)
                 .method(method)
@@ -37,7 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment save = paymentRepository.save(payment);
         // update order status
-        order.setStatus("PAID");
+        order.setStatus(OrderStatus.PAID);
         orderRepository.save(order);
         // send email notification
         emailService.sendOrderConfirmation(order.getUser().getUsername(), order.getId(), order.getTotalPrice(),order.getItems());

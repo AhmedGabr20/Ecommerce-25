@@ -1,5 +1,6 @@
 package com.gabr.ecommerce.entity;
 
+import com.gabr.ecommerce.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,9 @@ public class Order {
 
     private LocalDateTime createdAt;
     private Double totalPrice;
-    private String status;        // NEW, PAID, SHIPPED, COMPLETED, CANCELED
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;        // NEW, PAID, SHIPPED, COMPLETED, CANCELED
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> items = new ArrayList<>();
