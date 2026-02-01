@@ -1,5 +1,6 @@
 package com.gabr.ecommerce.service.impl;
 
+import com.gabr.ecommerce.constant.OrderStatus;
 import com.gabr.ecommerce.dto.OrderDto;
 import com.gabr.ecommerce.dto.OrderItemDto;
 import com.gabr.ecommerce.entity.AppUser;
@@ -38,7 +39,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setCreatedAt(LocalDateTime.now());
-        order.setStatus("NEW");
+        order.setStatus(OrderStatus.NEW);
 
         double total = 0.0;
         for (var item : cart.getItems()) {
