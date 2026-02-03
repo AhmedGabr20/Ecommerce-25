@@ -1,15 +1,13 @@
 package com.gabr.ecommerce.constant;
 
 public enum OrderStatus {
-    PAID,
-    CANCELED,
-    COMPLETED,
-    CLOSED,
-    CANCELED_CLOSED,
-    CLOSED_CLOSED,
     NEW,
-    PAID_CLOSED,
-    PAID_CLOSED_CLOSED,
+    PENDING,
+    PROCESSING,
+    PAID,
     SHIPPED,
-    SHIPPED_CLOSED,
+    DELIVERED,
+    COMPLETED,
+    CANCELED,
+    CLOSED
 }

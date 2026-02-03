@@ -2,10 +2,7 @@ package com.gabr.ecommerce.entity;
 
 import com.gabr.ecommerce.constant.OrderStatus;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +11,8 @@ import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"user", "items"})
+@EqualsAndHashCode(exclude = {"user", "items"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

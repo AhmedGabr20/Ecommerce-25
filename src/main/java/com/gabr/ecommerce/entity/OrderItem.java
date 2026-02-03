@@ -1,13 +1,12 @@
 package com.gabr.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Data
+@ToString(exclude = {"order"})
+@EqualsAndHashCode(exclude = {"order"})
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
