@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-init-from-h2.yaml
+
+  - include:
+      file: db/changelog/changes/002-optional-constraints.yaml
+
+  - include:
+      file: db/changelog/changes/003-insert-admin-user.sql
+
+  - include:
+      file: db/changelog/changes/004-insert-categories.sql

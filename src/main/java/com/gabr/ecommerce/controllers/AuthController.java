@@ -86,15 +86,28 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestParam String refreshToken) {
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@RequestParam(required = false) String refreshToken) {
+        if (refreshToken == null || refreshToken.isBlank()) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("refreshToken is required"));
+        }
+
+        // 1) validate against DB expiry
+        refreshTokenService.validateRefreshToken(refreshToken);
+
+        // 2) parse jwt
         String username = jwtService.extractUsername(refreshToken);
+
         AppUser user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        if (!jwtService.isTokenValid(refreshToken, new User(user.getUsername(), user.getPassword(), List.of())))
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        // 3) validate jwt matches username + not expired
+        if (!jwtService.isTokenValid(refreshToken, new User(user.getUsername(), user.getPassword(), List.of()))) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Invalid refresh token"));
+        }
 
         String newAccessToken = jwtService.generateAccessToken(user);
+
         return ResponseEntity.ok(
                 ApiResponse.success("Access token refreshed",
                         AuthResponse.builder()

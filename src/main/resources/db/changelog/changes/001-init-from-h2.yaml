@@ -1,0 +1,272 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-init-from-h2
+      author: Gabr
+      changes:
+
+        # =========================
+        # APP_USER
+        # =========================
+        - createTable:
+            tableName: app_user
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: password, type: VARCHAR(255) }
+              - column: { name: role,     type: VARCHAR(255) }
+              - column: { name: username, type: VARCHAR(255) }
+
+        # =========================
+        # CATEGORY
+        # =========================
+        - createTable:
+            tableName: category
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: name, type: VARCHAR(255) }
+
+        # =========================
+        # PRODUCTS
+        # =========================
+        - createTable:
+            tableName: products
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: description, type: VARCHAR(255) }
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column: { name: stock, type: INT }
+              - column: { name: category_id, type: BIGINT }
+
+        # FK products -> category
+        - addForeignKeyConstraint:
+            baseTableName: products
+            baseColumnNames: category_id
+            referencedTableName: category
+            referencedColumnNames: id
+            constraintName: fk_products_category
+
+        # =========================
+        # CART
+        # =========================
+        - createTable:
+            tableName: cart
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: total_price, type: DOUBLE PRECISION }
+              - column: { name: user_id, type: BIGINT }
+
+        # FK cart -> app_user
+        - addForeignKeyConstraint:
+            baseTableName: cart
+            baseColumnNames: user_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+            constraintName: fk_cart_user
+
+        # =========================
+        # CART_ITEM
+        # =========================
+        - createTable:
+            tableName: cart_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column: { name: cart_id, type: BIGINT }
+              - column: { name: product_id, type: BIGINT }
+
+        - addForeignKeyConstraint:
+            baseTableName: cart_item
+            baseColumnNames: cart_id
+            referencedTableName: cart
+            referencedColumnNames: id
+            constraintName: fk_cart_item_cart
+
+        - addForeignKeyConstraint:
+            baseTableName: cart_item
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_cart_item_product
+
+        # =========================
+        # ORDERS
+        # =========================
+        - createTable:
+            tableName: orders
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: created_at, type: TIMESTAMP }
+              - column: { name: status,     type: VARCHAR(255) }
+              - column: { name: total_price,type: DOUBLE PRECISION }
+              - column: { name: user_id,    type: BIGINT }
+
+        - addForeignKeyConstraint:
+            baseTableName: orders
+            baseColumnNames: user_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+            constraintName: fk_orders_user
+
+        # =========================
+        # ORDER_ITEM
+        # =========================
+        - createTable:
+            tableName: order_item
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+              - column:
+                  name: quantity
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column: { name: order_id,   type: BIGINT }
+              - column: { name: product_id, type: BIGINT }
+
+        - addForeignKeyConstraint:
+            baseTableName: order_item
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_order_item_order
+
+        - addForeignKeyConstraint:
+            baseTableName: order_item
+            baseColumnNames: product_id
+            referencedTableName: products
+            referencedColumnNames: id
+            constraintName: fk_order_item_product
+
+        # =========================
+        # PAYMENT
+        # =========================
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: amount,       type: DOUBLE PRECISION }
+              - column: { name: method,       type: VARCHAR(255) }
+              - column: { name: payment_date, type: TIMESTAMP }
+              - column: { name: status,       type: VARCHAR(255) }
+              - column: { name: order_id,     type: BIGINT }
+
+        - addForeignKeyConstraint:
+            baseTableName: payment
+            baseColumnNames: order_id
+            referencedTableName: orders
+            referencedColumnNames: id
+            constraintName: fk_payment_order
+
+        # =========================
+        # REFRESH_TOKEN
+        # =========================
+        - createTable:
+            tableName: refresh_token
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: expiry_date, type: TIMESTAMPTZ }
+              - column: { name: token,       type: VARCHAR(255) }
+              - column: { name: user_id,     type: BIGINT }
+
+        - addForeignKeyConstraint:
+            baseTableName: refresh_token
+            baseColumnNames: user_id
+            referencedTableName: app_user
+            referencedColumnNames: id
+            constraintName: fk_refresh_token_user
+
+        # =========================
+        # TOOL
+        # =========================
+        - createTable:
+            tableName: tool
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column: { name: brand, type: VARCHAR(255) }
+              - column: { name: name,  type: VARCHAR(255) }
+              - column:
+                  name: price
+                  type: DOUBLE PRECISION
+                  constraints:
+                    nullable: false
+

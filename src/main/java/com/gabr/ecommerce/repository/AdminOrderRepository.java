@@ -14,7 +14,7 @@ public interface AdminOrderRepository extends JpaRepository<Order, Long> {
         select o from Order o
         join o.user u
         where (:status is null or o.status = :status)
-          and (:username is null or lower(u.username) like lower(concat('%', :username, '%')))
+          and (:username is null or u.username = :username)
     """)
     Page<Order> search(@Param("status") OrderStatus status,
                        @Param("username") String username,

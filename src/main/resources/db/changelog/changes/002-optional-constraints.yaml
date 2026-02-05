@@ -1,0 +1,38 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-constraints
+      author: Gabr
+      changes:
+        # AppUser.username unique + not null
+        - addNotNullConstraint:
+            tableName: app_user
+            columnName: username
+            columnDataType: VARCHAR(255)
+
+        - addUniqueConstraint:
+            tableName: app_user
+            columnNames: username
+            constraintName: uk_app_user_username
+
+        # Cart.user_id one-to-one => unique + not null
+        - addNotNullConstraint:
+            tableName: cart
+            columnName: user_id
+            columnDataType: BIGINT
+
+        - addUniqueConstraint:
+            tableName: cart
+            columnNames: user_id
+            constraintName: uk_cart_user_id
+
+        # Orders.status not null
+        - addNotNullConstraint:
+            tableName: orders
+            columnName: status
+            columnDataType: VARCHAR(255)
+
+        # Payment.order_id one-to-one => unique (واختياري not null)
+        - addUniqueConstraint:
+            tableName: payment
+            columnNames: order_id
+            constraintName: uk_payment_order_id
