@@ -37,22 +37,23 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<RevenuePointDto> revenueByDay (@Param("from")LocalDateTime from, @Param("to")LocalDateTime to);
 
     @Query("""
-            select new com.gabr.ecommerce.dto.admin.TopProductDto(
-            p.id,
-            p.name,
-            coalesce(sum(oi.quantity),0),
-            coalesce(sum(oi.price),0)
-            )
-            from OrderItem oi 
-            join oi.order o 
-            join oi.product p
-            where o.status = com.gabr.ecommerce.constant.OrderStatus.PAID
-            AND o.createdAt >= :from
-            AND o.createdAt < :to  
-            group by p.id , p.name
-            ORDER BY SUM(oi.quantity) desc 
+    select new com.gabr.ecommerce.dto.admin.TopProductDto(
+        p.id,
+        p.nameEn,
+        p.nameAr,
+        coalesce(sum(oi.quantity),0),
+        coalesce(sum(oi.price),0)
+    )
+    from OrderItem oi
+    join oi.order o
+    join oi.product p
+    where o.status = com.gabr.ecommerce.constant.OrderStatus.PAID
+      and o.createdAt >= :from
+      and o.createdAt < :to
+    group by p.id, p.nameEn, p.nameAr
+    order by sum(oi.quantity) desc
 """)
     List<TopProductDto> topProducts(@Param("from") LocalDateTime from, @Param("to")LocalDateTime to);
 
-    List<Order> findByUserId(int userId);
+    List<Order> findByUserId(Long userId);
 }

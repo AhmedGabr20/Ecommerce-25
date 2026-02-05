@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TopProductDto {
     private Long productId;
-    private String productName;
+    private String nameEn;
+    private String nameAr;
     private long totalQty;
     private double totalRevenue;
 }

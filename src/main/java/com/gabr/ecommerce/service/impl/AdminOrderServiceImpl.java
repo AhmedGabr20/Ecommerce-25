@@ -39,6 +39,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public AdminOrderDto details(Long orderId) {
         Order order = adminOrderRepository.findDetailsById(orderId);
         if (order == null) throw new BusinessException(ErrorCode.ORDER_NOT_FOUND);
@@ -80,7 +81,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
                 .items(o.getItems().stream().map(i -> AdminOrderItemDto.builder()
                         .id(i.getId())
                         .productId(i.getProduct() != null ? i.getProduct().getId() : null)
-                        .productName(i.getProduct() != null ? i.getProduct().getName() : null)
+                        .productName(i.getProduct() != null ? i.getProduct().getNameEn() : null)
                         .quantity(i.getQuantity())
                         .price(i.getPrice())
                         .build()

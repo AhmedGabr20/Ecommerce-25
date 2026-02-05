@@ -81,7 +81,7 @@ public class OrderInvoicePdf {
 
         // ===== Table Body =====
         for (OrderItem item : items) {
-            table.addCell(makeBodyCell(item.getProduct().getName(), textFont));
+            table.addCell(makeBodyCell(item.getProduct().getNameEn(), textFont));
             table.addCell(makeBodyCell(String.valueOf(item.getQuantity()), textFont));
             table.addCell(makeBodyCell(String.format("%.2f", item.getPrice()), textFont));
             double subtotal = item.getQuantity() * item.getPrice();

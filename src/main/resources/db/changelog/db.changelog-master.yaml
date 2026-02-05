@@ -6,7 +6,16 @@ databaseChangeLog:
       file: db/changelog/changes/002-optional-constraints.yaml
 
   - include:
-      file: db/changelog/changes/003-insert-admin-user.sql
+      file: db/changelog/changes/004-insert-categories.sql
 
   - include:
-      file: db/changelog/changes/004-insert-categories.sql
+      file: db/changelog/changes/006-products-enhance.sql
+
+  - include:
+      file: db/changelog/changes/007-product-images.sql
+
+  - include:
+      file: db/changelog/changes/008-seed-products-and-images.sql
+
+  - include:
+      file: db/changelog/changes/009-remove-legacy-name.sql

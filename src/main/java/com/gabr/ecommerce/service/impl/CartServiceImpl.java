@@ -32,7 +32,7 @@ public class CartServiceImpl implements CartService {
 
 
     @Override
-    public CartDto getUserCart(int userId) {
+    public CartDto getUserCart(Long userId) {
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Cart cart = cartRepository.findByUser(user)
                 .orElseGet(() -> cartRepository.save(Cart.builder().user(user).build()));
@@ -40,7 +40,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto addItem(int userId, Long productId, int quantity) {
+    public CartDto addItem(Long userId, Long productId, int quantity) {
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("Product not found"));
         Cart cart = cartRepository.findByUser(user)
@@ -66,7 +66,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto removeItem(int userId, Long productId) {
+    public CartDto removeItem(Long userId, Long productId) {
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
         cart.getItems().removeIf(i -> i.getProduct().getId().equals(productId));
@@ -76,7 +76,7 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto clearCart(int userId) {
+    public CartDto clearCart(Long userId) {
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
         Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
         cart.getItems().clear();
@@ -90,7 +90,7 @@ public class CartServiceImpl implements CartService {
                 : cart.getItems().stream()
                 .map(i -> new CartItemDto(
                         i.getProduct().getId(),
-                        i.getProduct().getName(),
+                        i.getProduct().getNameEn(),
                         i.getQuantity(),
                         i.getPrice()))
                 .collect(Collectors.toList());

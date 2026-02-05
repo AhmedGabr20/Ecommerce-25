@@ -17,13 +17,13 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/{userId}/place")
-    public ResponseEntity<ApiResponse<OrderDto>> placeOrder(@PathVariable int userId) {
+    public ResponseEntity<ApiResponse<OrderDto>> placeOrder(@PathVariable Long userId) {
         return ResponseEntity.ok(
                 ApiResponse.success("Order placed successfully", orderService.placeOrder(userId)));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<ApiResponse<List<OrderDto>>> getUserOrders(@PathVariable int userId) {
+    public ResponseEntity<ApiResponse<List<OrderDto>>> getUserOrders(@PathVariable Long userId) {
         return ResponseEntity.ok(
                 ApiResponse.success("User orders fetched", orderService.getUserOrders(userId)));
     }

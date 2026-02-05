@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<AppUser,Integer> {
+public interface UserRepository extends JpaRepository<AppUser,Long> {
     Optional<AppUser> findByUsername(String username);
 
     @Query(" select count(u) from AppUser u")

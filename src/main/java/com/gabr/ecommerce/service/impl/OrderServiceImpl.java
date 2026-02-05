@@ -7,6 +7,8 @@ import com.gabr.ecommerce.entity.AppUser;
 import com.gabr.ecommerce.entity.Cart;
 import com.gabr.ecommerce.entity.Order;
 import com.gabr.ecommerce.entity.OrderItem;
+import com.gabr.ecommerce.exception.BusinessException;
+import com.gabr.ecommerce.exception.ErrorCode;
 import com.gabr.ecommerce.repository.CartRepository;
 import com.gabr.ecommerce.repository.OrderRepository;
 import com.gabr.ecommerce.repository.UserRepository;
@@ -30,11 +32,19 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public OrderDto placeOrder(int userId) {
+    public OrderDto placeOrder(Long userId) {
         AppUser user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User not found"));
-        Cart cart = cartRepository.findByUser(user).orElseThrow(() -> new EntityNotFoundException("Cart not found"));
-        if (cart.getItems().isEmpty())
-            throw new EntityNotFoundException("Cart is empty");
+        // ✅ Create cart if missing
+        Cart cart = cartRepository.findByUser(user)
+                .orElseGet(() -> cartRepository.save(
+                        Cart.builder()
+                                .user(user)
+                                .totalPrice(0.0)
+                                .build()
+                ));
+
+        if (cart.getItems() == null || cart.getItems().isEmpty())
+            throw new BusinessException(ErrorCode.CART_EMPTY);
 
         Order order = new Order();
         order.setUser(user);
@@ -49,18 +59,24 @@ public class OrderServiceImpl implements OrderService {
                     .quantity(item.getQuantity())
                     .price(item.getPrice())
                     .build();
-            total += item.getPrice();
+        //    total += item.getPrice();
             order.getItems().add(orderItem);
+            total += item.getPrice() * item.getQuantity();
         }
         order.setTotalPrice(total);
         Order SavedOrder = orderRepository.save(order);
-        cartRepository.delete(cart);
+    //    cartRepository.delete(cart);
+
+        // ✅ clear cart instead of deleting it
+        cart.getItems().clear();
+        cart.setTotalPrice(0.0);
+        cartRepository.save(cart);
 
         return toDto(SavedOrder);
     }
 
     @Override
-    public List<OrderDto> getUserOrders(int userId) {
+    public List<OrderDto> getUserOrders(Long userId) {
         return orderRepository.findByUserId(userId).stream().map(this::toDto).toList();
     }
 
@@ -78,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
                 .items(order.getItems().stream()
                         .map(i -> new OrderItemDto(
                                 i.getProduct().getId(),
-                                i.getProduct().getName(),
+                                i.getProduct().getNameEn(),
                                 i.getQuantity(),
                                 i.getPrice()))
                         .toList())

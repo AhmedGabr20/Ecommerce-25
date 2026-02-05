@@ -1,9 +1,12 @@
 package com.gabr.ecommerce.service.impl;
 
 import com.gabr.ecommerce.dto.ProductDto;
+import com.gabr.ecommerce.dto.ProductImageDto;
 import com.gabr.ecommerce.entity.Category;
 import com.gabr.ecommerce.entity.Product;
+import com.gabr.ecommerce.entity.ProductImage;
 import com.gabr.ecommerce.repository.CategoryRepository;
+import com.gabr.ecommerce.repository.ProductImageRepository;
 import com.gabr.ecommerce.repository.ProductRepository;
 import com.gabr.ecommerce.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,24 +27,65 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository ;
     private  final CategoryRepository categoryRepository;
+    private final ProductImageRepository productImageRepository;
+
+
     private ProductDto toDto(Product p){
-        Category c = p.getCategory();
+        String primaryUrl = null;
+        if (p.getImages() != null) {
+            var primary = p.getImages().stream()
+                    .filter(img -> Boolean.TRUE.equals(img.getPrimaryImage()))
+                    .findFirst()
+                    .orElse(p.getImages().stream()
+                            .sorted((a,b) -> Integer.compare(
+                                    a.getSortOrder() == null ? 0 : a.getSortOrder(),
+                                    b.getSortOrder() == null ? 0 : b.getSortOrder()
+                            ))
+                            .findFirst()
+                            .orElse(null));
+
+            if (primary != null) primaryUrl = primary.getUrl();
+        }
         return ProductDto.builder()
                 .id(p.getId())
-                .name(p.getName())
-                .description(p.getDescription())
+                .nameAr(p.getNameAr())
+                .nameEn(p.getNameEn())
+                .descriptionAr(p.getDescriptionAr())
+                .descriptionEn(p.getDescriptionEn())
+                .sku(p.getSku())
+                .slug(p.getSlug())
+                .brand(p.getBrand())
+                .currency(p.getCurrency())
+                .active(p.getActive())
                 .price(p.getPrice())
                 .stock(p.getStock())
-                .categoryId(c!=null?c.getId():null)
-                .categoryName(c!=null?c.getName():null)
+                .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
+                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)
+                .primaryImageUrl(primaryUrl)
+                .images(p.getImages() == null ? null :
+                        p.getImages().stream().map(this::toImageDto).toList()
+                )
                 .build();
     }
+    private ProductImageDto toImageDto(ProductImage img) {
+        return ProductImageDto.builder()
+                .id(img.getId())
+                .url(img.getUrl())
+                .altEn(img.getAltEn())
+                .altAr(img.getAltAr())
+                .primaryImage(img.getPrimaryImage())
+                .sortOrder(img.getSortOrder())
+                .build();
+    }
+
     private Product toEntity(ProductDto dto){
         Category category = categoryRepository.findById(dto.getCategoryId()).get();
         return Product.builder()
                 .id(dto.getId())
-                .name(dto.getName())
-                .description(dto.getDescription())
+                .nameAr(dto.getNameAr())
+                .nameEn(dto.getNameEn())
+                .descriptionAr(dto.getDescriptionAr())
+                .descriptionEn(dto.getDescriptionEn())
                 .price(dto.getPrice())
                 .stock(dto.getStock())
                 .category(category)
@@ -54,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
         if (dto.getCategoryId() == null) {
             throw new IllegalArgumentException("Category ID is required");
         }
-        log.info("Creating product: {}", dto.getName());
+        log.info("Creating product: {}", dto.getNameEn());
         Product savedProduct = productRepository.save(toEntity(dto));
         log.info("Created product id={}", savedProduct.getId());
         return toDto(savedProduct);
@@ -64,8 +108,10 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto update(Long id, ProductDto dto) {
         Product existingProduct = productRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Product not found"));
         Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(() -> new EntityNotFoundException("Category not found"));
-        existingProduct.setName(dto.getName());
-        existingProduct.setDescription(dto.getDescription());
+        existingProduct.setNameAr(dto.getNameAr());
+        existingProduct.setNameEn(dto.getNameEn());
+        existingProduct.setDescriptionAr(dto.getDescriptionAr());
+        existingProduct.setDescriptionEn(dto.getDescriptionEn());
         existingProduct.setPrice(dto.getPrice());
         existingProduct.setStock(dto.getStock());
         existingProduct.setCategory(category);
@@ -74,7 +120,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto getById(Long id) {
-        return toDto(productRepository.findById(id).orElseThrow(()-> new EntityNotFoundException("Product not found")));
+        return toDto(productRepository.findDetailsById(id).orElseThrow(()-> new EntityNotFoundException("Product not found")));
     }
 
     @Override
@@ -88,11 +134,66 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAll(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
-        return productRepository.findAll(pageable).getContent().stream().map(this::toDto).toList();
+        return productRepository.findAll(pageable)
+                .getContent()
+                .stream()
+                .map(p -> {
+                    String primaryUrl = productImageRepository.findOrderedUrls(p.getId())
+                            .stream().findFirst().orElse(null);
+                    return toDtoList(p, primaryUrl);
+                })
+                .toList();
     }
 
     @Override
     public List<ProductDto> getByName(String name) {
-        return productRepository.findByNameContainingIgnoreCase(name).stream().map(this::toDto).toList();
+        return productRepository
+                .findByNameEnContainingIgnoreCaseOrNameArContainingIgnoreCase(
+                        name, name
+                )
+                .stream()
+                .map(this::toDto)
+                .toList();
     }
+
+    private void applyDto(ProductDto dto, Product p, Category category) {
+
+        p.setNameEn(dto.getNameEn());
+        p.setNameAr(dto.getNameAr());
+        p.setDescriptionEn(dto.getDescriptionEn());
+        p.setDescriptionAr(dto.getDescriptionAr());
+
+        p.setSku(dto.getSku());
+        p.setSlug(dto.getSlug());
+        p.setBrand(dto.getBrand());
+
+        p.setCurrency(dto.getCurrency() == null ? "EGP" : dto.getCurrency());
+        p.setActive(dto.getActive() == null ? true : dto.getActive());
+
+        p.setPrice(dto.getPrice());
+        p.setStock(dto.getStock());
+        p.setCategory(category);
+    }
+
+    private ProductDto toDtoList(Product p, String primaryImageUrl) {
+        return ProductDto.builder()
+                .id(p.getId())
+                .nameAr(p.getNameAr())
+                .nameEn(p.getNameEn())
+                .descriptionAr(p.getDescriptionAr())
+                .descriptionEn(p.getDescriptionEn())
+                .sku(p.getSku())
+                .slug(p.getSlug())
+                .brand(p.getBrand())
+                .currency(p.getCurrency())
+                .active(p.getActive())
+                .price(p.getPrice())
+                .stock(p.getStock())
+                .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
+                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)
+                .primaryImageUrl(primaryImageUrl)
+                .images(null)
+                .build();
+    }
+
 }

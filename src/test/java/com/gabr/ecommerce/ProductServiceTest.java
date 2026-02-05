@@ -24,14 +24,14 @@ class ProductServiceTest {
 
     @Test
     void createProduct() {
-        Product p = Product.builder().id(1L).name("Hammer").price(100.0).stock(5).build();
+        Product p = Product.builder().id(1L).nameEn("Hammer").price(100.0).stock(5).build();
         when(repo.save(any())).thenReturn(p);
 
-        ProductDto dto = ProductDto.builder().name("Hammer").price(100.0).stock(5).build();
+        ProductDto dto = ProductDto.builder().nameEn("Hammer").price(100.0).stock(5).build();
         ProductDto result = service.create(dto);
 
         assertNotNull(result.getId());
-        assertEquals("Hammer", result.getName());
+        assertEquals("Hammer", result.getNameEn());
         verify(repo, times(1)).save(any());
     }
 }
