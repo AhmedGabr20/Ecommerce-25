@@ -35,4 +35,21 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             String nameEn, String nameAr, Pageable pageable
     );
 
+    @Query("""
+select p from Product p
+left join p.category c
+where (:q = '' or
+       lower(p.nameEn) like lower(concat('%', :q, '%')) or
+       lower(p.nameAr) like lower(concat('%', :q, '%')) or
+       lower(p.sku)    like lower(concat('%', :q, '%')) or
+       lower(p.slug)   like lower(concat('%', :q, '%'))
+)
+and (:categoryId is null or c.id = :categoryId)
+and (:active is null or p.active = :active)
+""")
+    Page<Product> adminSearch(@Param("q") String q,
+                              @Param("categoryId") Long categoryId,
+                              @Param("active") Boolean active,
+                              Pageable pageable);
+
 }
