@@ -8,6 +8,7 @@ import com.gabr.ecommerce.exception.BusinessException;
 import com.gabr.ecommerce.exception.ErrorCode;
 import com.gabr.ecommerce.repository.AdminOrderRepository;
 import com.gabr.ecommerce.service.AdminOrderService;
+import com.gabr.ecommerce.service.camunda.CamundaOrderProcessService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class AdminOrderServiceImpl implements AdminOrderService {
 
     private final AdminOrderRepository adminOrderRepository;
+    private final CamundaOrderProcessService camundaOrderProcessService;
 
 
     @Override
@@ -53,6 +55,21 @@ public class AdminOrderServiceImpl implements AdminOrderService {
     public AdminOrderDto updateStatus(Long orderId, OrderStatus newStatus) {
         Order o = adminOrderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ORDER_NOT_FOUND));
+        OrderStatus current = o.getStatus();
+        //  لو Admin اختار SHIPPED وهو currently PAID -> ده Approve Shipment
+        if (OrderStatus.PAID.equals(current) && OrderStatus.SHIPPED.equals(newStatus)) {
+            camundaOrderProcessService.approveShipment(orderId, true);
+            // متعملش update هنا: Worker بتاع external task "order.setStatusShipped" هيحدّث DB
+            return toDtoBasic(o);
+        }
+        //  لو Admin اختار CANCELED وهو currently PAID -> ده Reject Shipment
+        if (OrderStatus.PAID.equals(current) && OrderStatus.CANCELED.equals(newStatus)) {
+            camundaOrderProcessService.approveShipment(orderId, false);
+            // هنا الـ BPMN عندك مسار NO بيروح End مباشرة
+            // الأفضل: خلي مسار NO يعمل external task لتحديث CANCELED
+
+            return toDtoBasic(o);
+        }
         o.setStatus(newStatus);
         Order saved = adminOrderRepository.save(o);
         return toDtoBasic(saved);

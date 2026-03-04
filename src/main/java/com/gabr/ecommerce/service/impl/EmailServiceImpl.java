@@ -133,4 +133,30 @@ public class EmailServiceImpl implements EmailService {
             e.printStackTrace();
         }
     }
+
+    @Override
+    @Async
+    public void sendReminderEmail(String to, String username, Long orderId, String approvalUrl, Double orderTotal) {
+        try {
+            Context context = new Context();
+            context.setVariable("username", username);
+            context.setVariable("orderId", orderId);
+            context.setVariable("approvalUrl", approvalUrl);
+            context.setVariable("orderTotal", orderTotal);
+
+            String htmlContent = templateEngine.process("reminder-email", context);  // اسم الـ template بدون .html
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject("🔔 Reminder: Approve Your Order #" + orderId);
+            helper.setText(htmlContent, true);
+
+            mailSender.send(message);
+
+            System.out.println("✅ Reminder email sent successfully to " + to + " for order " + orderId);
+        } catch (MessagingException e) {
+            log.error("❌ Failed to send reminder email to " + to + ": " + e.getMessage());
+        }
+    }
 }

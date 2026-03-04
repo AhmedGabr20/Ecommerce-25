@@ -161,6 +161,19 @@
             <version>5.5.13.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.camunda.bpm</groupId>
+            <artifactId>camunda-external-task-client</artifactId>
+            <version>7.22.0</version>
+        </dependency>
+
+        <!-- علشان @ExternalTaskSubscription في Spring -->
+        <dependency>
+            <groupId>org.camunda.bpm.springboot</groupId>
+            <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+            <version>7.22.0</version>
+        </dependency>
+
 
 
     </dependencies>

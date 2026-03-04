@@ -1,5 +1,6 @@
 package com.gabr.ecommerce.service.impl;
 
+import com.gabr.ecommerce.service.camunda.CamundaOrderProcessService;
 import com.gabr.ecommerce.constant.OrderStatus;
 import com.gabr.ecommerce.dto.OrderDto;
 import com.gabr.ecommerce.dto.OrderItemDto;
@@ -29,6 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CartRepository cartRepository;
     private final UserRepository userRepository;
+    private final CamundaOrderProcessService camundaOrderProcessService;
 
 
     @Override
@@ -65,6 +67,7 @@ public class OrderServiceImpl implements OrderService {
         }
         order.setTotalPrice(total);
         Order SavedOrder = orderRepository.save(order);
+        camundaOrderProcessService.startOrderProcess(SavedOrder.getId(),SavedOrder.getUser().getUsername(),SavedOrder.getUser().getUsername());
     //    cartRepository.delete(cart);
 
         // ✅ clear cart instead of deleting it

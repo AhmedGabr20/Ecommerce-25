@@ -10,6 +10,7 @@ import com.gabr.ecommerce.repository.OrderRepository;
 import com.gabr.ecommerce.repository.PaymentRepository;
 import com.gabr.ecommerce.service.EmailService;
 import com.gabr.ecommerce.service.PaymentService;
+import com.gabr.ecommerce.service.camunda.CamundaOrderProcessService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final EmailService emailService;
+    private final CamundaOrderProcessService camundaOrderProcessService;
 
 
     @Override
@@ -48,8 +50,9 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment save = paymentRepository.save(payment);
         // update order status
-        order.setStatus(OrderStatus.PAID);
-        orderRepository.save(order);
+        camundaOrderProcessService.paymentReceived(order.getId());
+        //order.setStatus(OrderStatus.PAID);
+        //orderRepository.save(order);
         // send email notification
         emailService.sendOrderConfirmation(order.getUser().getUsername(), order.getId(), order.getTotalPrice(),order.getItems());
         return PaymentDto.builder()

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Reminder - E-Commerce App</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f6f8; padding: 20px;">
+<div style="max-width: 600px; margin: auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);">
+    <div style="background-color: #ff9800; color: white; text-align: center; padding: 15px 0;">
+        <h2 style="margin: 0;">E-Commerce App Reminder</h2>
+    </div>
+    <div style="padding: 25px;">
+        <h3 style="color: #333;">Reminder: Approve Your Order Shipment!</h3>
+        <p style="font-size: 15px; color: #555;">
+            Hi <b th:text="${username}">Customer</b>,<br><br>
+            We noticed that your order (ID: <b th:text="${orderId}">123</b>) is still waiting for your approval to ship.<br><br>
+            Please review and approve the shipment soon to avoid auto-cancellation after 3 days.<br><br>
+            <strong>Order Total:</strong> <span th:text="${orderTotal}">$0.00</span>
+        </p>
+        <a th:href="${approvalUrl}"
+           style="display:inline-block; background-color:#ff9800; color:white; padding:10px 20px; border-radius:5px; text-decoration:none;">
+            Approve Shipment Now
+        </a>
+        <p style="font-size:13px; color:#999; margin-top:30px;">
+            If you have any questions, contact support.
+        </p>
+    </div>
+    <div style="background-color:#f1f1f1; text-align:center; padding:10px; font-size:12px; color:#777;">
+        © 2025 E-Commerce App. All rights reserved.
+    </div>
+</div>
+</body>
+</html>
