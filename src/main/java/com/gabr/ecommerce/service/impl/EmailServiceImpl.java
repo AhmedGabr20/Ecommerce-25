@@ -17,6 +17,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -99,7 +100,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     @Async
-    public void sendOrderConfirmation(String to, Long orderId, Double total, List<OrderItem> items) {
+    public void sendOrderConfirmation(String to, Long orderId, BigDecimal total, List<OrderItem> items) {
         try {
             // 1️⃣ إعداد الـ Context للـ Template
             Context context = new Context();

@@ -19,6 +19,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseGet(() -> cartRepository.save(
                         Cart.builder()
                                 .user(user)
-                                .totalPrice(0.0)
+                                .totalPrice(BigDecimal.ZERO)
                                 .build()
                 ));
 
@@ -53,26 +54,14 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
 
-        double total = 0.0;
-        for (var item : cart.getItems()) {
-            OrderItem orderItem = OrderItem.builder()
-                    .order(order)
-                    .product(item.getProduct())
-                    .quantity(item.getQuantity())
-                    .price(item.getPrice())
-                    .build();
-        //    total += item.getPrice();
-            order.getItems().add(orderItem);
-            total += item.getPrice() * item.getQuantity();
-        }
-        order.setTotalPrice(total);
+        order.setTotalPrice(cart.getTotalPrice());
         Order SavedOrder = orderRepository.save(order);
         camundaOrderProcessService.startOrderProcess(SavedOrder.getId(),SavedOrder.getUser().getUsername(),SavedOrder.getUser().getUsername());
     //    cartRepository.delete(cart);
 
         // ✅ clear cart instead of deleting it
         cart.getItems().clear();
-        cart.setTotalPrice(0.0);
+        cart.setTotalPrice(BigDecimal.ZERO);
         cartRepository.save(cart);
 
         return toDto(SavedOrder);

@@ -3,6 +3,7 @@ package com.gabr.ecommerce.dto.admin;
 import com.gabr.ecommerce.constant.OrderStatus;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,7 +13,7 @@ public class AdminOrderDto {
     private Long userId;
     private String username;
     private LocalDateTime createdAt;
-    private Double totalPrice;
+    private BigDecimal totalPrice;
     private OrderStatus status; // NEW/PAID/...
     private List<AdminOrderItemDto> items;
 }

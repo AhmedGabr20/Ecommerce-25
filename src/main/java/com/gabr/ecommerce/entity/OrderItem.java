@@ -3,6 +3,8 @@ package com.gabr.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @ToString(exclude = {"order"})
@@ -23,5 +25,5 @@ public class OrderItem {
     private Product product;
 
     private int quantity;
-    private double price;
+    private BigDecimal price;
 }

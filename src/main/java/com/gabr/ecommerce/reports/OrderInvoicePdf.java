@@ -11,13 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.OutputStream;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class OrderInvoicePdf {
-    public void createOrderInvoicePdf(Long orderId, Double total, List<OrderItem> items, OutputStream outputStream) throws Exception {
+    public void createOrderInvoicePdf(Long orderId, BigDecimal total, List<OrderItem> items, OutputStream outputStream) throws Exception {
         Document document = new Document(PageSize.A4, 50, 50, 50, 50);
         PdfWriter writer = PdfWriter.getInstance(document, outputStream);
         document.open();
@@ -84,7 +85,8 @@ public class OrderInvoicePdf {
             table.addCell(makeBodyCell(item.getProduct().getNameEn(), textFont));
             table.addCell(makeBodyCell(String.valueOf(item.getQuantity()), textFont));
             table.addCell(makeBodyCell(String.format("%.2f", item.getPrice()), textFont));
-            double subtotal = item.getQuantity() * item.getPrice();
+            BigDecimal subtotal = item.getPrice()
+                    .multiply(BigDecimal.valueOf(item.getQuantity()));
             table.addCell(makeBodyCell(String.format("%.2f", subtotal), textFont));
         }
 

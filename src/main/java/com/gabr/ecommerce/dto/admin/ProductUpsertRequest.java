@@ -3,6 +3,8 @@ package com.gabr.ecommerce.dto.admin;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class ProductUpsertRequest {
 
@@ -16,7 +18,7 @@ public class ProductUpsertRequest {
     private String descriptionAr;
 
     @NotNull @Positive
-    private Double price;
+    private BigDecimal price;
 
     @NotNull @Min(0)
     private Integer stock;

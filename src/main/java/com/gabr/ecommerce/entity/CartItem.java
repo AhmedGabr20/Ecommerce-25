@@ -3,6 +3,8 @@ package com.gabr.ecommerce.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Data
 @AllArgsConstructor
@@ -23,5 +25,7 @@ public class CartItem {
     private Product product;
 
     private int quantity;
-    private double price;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal unitPrice;
 }

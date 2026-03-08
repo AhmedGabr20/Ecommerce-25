@@ -2,6 +2,7 @@ package com.gabr.ecommerce.dto.admin;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
@@ -14,7 +15,7 @@ public class AdminProductDto {
     private String descriptionEn;
     private String descriptionAr;
 
-    private Double price;
+    private BigDecimal price;
     private Integer stock;
 
     private String sku;

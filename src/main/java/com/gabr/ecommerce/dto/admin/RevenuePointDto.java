@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -13,5 +14,5 @@ import java.util.Date;
 @Builder
 public class RevenuePointDto {
     private Date date;
-    private double revenue;
+    private BigDecimal revenue;
 }

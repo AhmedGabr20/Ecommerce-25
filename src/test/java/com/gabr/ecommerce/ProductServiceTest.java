@@ -8,6 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.math.BigDecimal;
+
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,10 +27,10 @@ class ProductServiceTest {
 
     @Test
     void createProduct() {
-        Product p = Product.builder().id(1L).nameEn("Hammer").price(100.0).stock(5).build();
+        Product p = Product.builder().id(1L).nameEn("Hammer").price(BigDecimal.valueOf(100.0)).stock(5).build();
         when(repo.save(any())).thenReturn(p);
 
-        ProductDto dto = ProductDto.builder().nameEn("Hammer").price(100.0).stock(5).build();
+        ProductDto dto = ProductDto.builder().nameEn("Hammer").price(BigDecimal.valueOf(100.0)).stock(5).build();
         ProductDto result = service.create(dto);
 
         assertNotNull(result.getId());

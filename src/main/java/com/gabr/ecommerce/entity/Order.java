@@ -4,6 +4,7 @@ import com.gabr.ecommerce.constant.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class Order {
     private AppUser user;
 
     private LocalDateTime createdAt;
-    private Double totalPrice;
+    private BigDecimal totalPrice;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;        // NEW, PAID, SHIPPED, COMPLETED, CANCELED

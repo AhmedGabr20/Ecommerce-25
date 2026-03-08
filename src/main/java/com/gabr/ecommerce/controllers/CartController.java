@@ -1,11 +1,16 @@
 package com.gabr.ecommerce.controllers;
 
+import com.gabr.ecommerce.dto.AddItemRequest;
 import com.gabr.ecommerce.dto.ApiResponse;
 import com.gabr.ecommerce.dto.CartDto;
 import com.gabr.ecommerce.service.CartService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -13,26 +18,37 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponse<CartDto>> getCart(@PathVariable Long userId) {
-        return ResponseEntity.ok(ApiResponse.success("Cart fetched", cartService.getUserCart(userId)));
+    @GetMapping()
+    public ResponseEntity<ApiResponse<CartDto>> getCart(
+            @RequestHeader(value = "X-CART-UUID", required = false) UUID cartUuid,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(ApiResponse.success("Cart fetched", cartService.getCurrentCart(principal, cartUuid)));
     }
 
-    @PostMapping("/{userId}/add/{productId}")
+    @PostMapping("/items")
     public ResponseEntity<ApiResponse<CartDto>> addItem(
-            @PathVariable Long userId,
-            @PathVariable Long productId,
-            @RequestParam(defaultValue = "1") int quantity) {
-        return ResponseEntity.ok(ApiResponse.success("Item added", cartService.addItem(userId, productId, quantity)));
+            @RequestHeader(value = "X-CART-UUID", required = false) UUID cartUuid,
+            @RequestBody @Valid AddItemRequest request,
+            Principal principal
+            ) {
+        return ResponseEntity.ok(ApiResponse.success("Item added", cartService.addItem(principal, cartUuid, request)));
     }
 
-    @DeleteMapping("/{userId}/remove/{productId}")
-    public ResponseEntity<ApiResponse<CartDto>> removeItem(@PathVariable Long userId, @PathVariable Long productId) {
-        return ResponseEntity.ok(ApiResponse.success("Item removed", cartService.removeItem(userId, productId)));
+    @DeleteMapping("/items/{productId}")
+    public ResponseEntity<ApiResponse<CartDto>> removeItem(
+            @RequestHeader(value = "X-CART-UUID", required = false) UUID cartUuid,
+            @PathVariable Long productId,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(ApiResponse.success("Item removed", cartService.removeItem(principal, cartUuid,productId)));
     }
-    @DeleteMapping("/{userId}/clear")
-    public ResponseEntity<ApiResponse<CartDto>> clearCart(@PathVariable Long userId) {
-        return ResponseEntity.ok(ApiResponse.success("Cart cleared", cartService.clearCart(userId)));
+    @DeleteMapping()
+    public ResponseEntity<ApiResponse<CartDto>> clearCart(
+            @RequestHeader(value = "X-CART-UUID", required = false) UUID cartUuid,
+            Principal principal
+    ) {
+        return ResponseEntity.ok(ApiResponse.success("Cart cleared", cartService.clearCart(principal, cartUuid)));
     }
 
 

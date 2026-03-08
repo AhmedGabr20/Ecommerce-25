@@ -5,26 +5,26 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment {
+@Builder
+public class Coupon {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String method;        // e.g. CASH, CARD, PAYPAL
-    private String status;        // e.g. PENDING, SUCCESS, FAILED
-    private BigDecimal amount;
-    private LocalDateTime paymentDate;
+    @Column(unique = true)
+    private String code;
 
-    @OneToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    private BigDecimal discountPercentage;
+
+    private LocalDateTime expiryDate;
+
+    private Boolean active;
 }

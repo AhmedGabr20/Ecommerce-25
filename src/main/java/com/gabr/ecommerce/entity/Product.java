@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,9 @@ public class Product {
     @Column(name = "description_ar", columnDefinition = "TEXT")
     private String descriptionAr;
 
-    @Column(nullable = false)
-    private Double price;
+
+    @Column(nullable = false, precision = 19, scale = 2)
+    private BigDecimal price;
 
     private Integer stock;
 
@@ -78,6 +80,9 @@ public class Product {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Version
+    private Long version;
 
     @PrePersist
     public void prePersist() {

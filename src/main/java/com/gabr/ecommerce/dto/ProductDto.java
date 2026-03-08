@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -31,7 +32,7 @@ public class ProductDto implements Serializable {
     private Boolean active;
 
     @NotNull @Min(value = 0, message = "price must be >= 0")
-    private Double price;
+    private BigDecimal price;
 
     @NotNull @Min(value = 0, message = "stock must be >= 0")
     private Integer stock;
