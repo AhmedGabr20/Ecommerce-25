@@ -156,6 +156,23 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    @Override
+    public List<ProductDto> getByCategory(Long categoryId, int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+
+        return productRepository.findByCategory(category,pageable)
+                .getContent()
+                .stream()
+                .map(p -> {
+                    String primaryUrl = productImageRepository.findOrderedUrls(p.getId())
+                            .stream().findFirst().orElse(null);
+                    return toDtoList(p, primaryUrl);
+                })
+                .toList();
+    }
+
     private void applyDto(ProductDto dto, Product p, Category category) {
 
         p.setNameEn(dto.getNameEn());

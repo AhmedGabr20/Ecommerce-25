@@ -1,5 +1,6 @@
 package com.gabr.ecommerce.repository;
 
+import com.gabr.ecommerce.entity.Category;
 import com.gabr.ecommerce.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -51,5 +52,7 @@ and (:active is null or p.active = :active)
                               @Param("categoryId") Long categoryId,
                               @Param("active") Boolean active,
                               Pageable pageable);
+
+    Page<Product> findByCategory(Category category, Pageable pageable);
 
 }

@@ -32,10 +32,14 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<ProductDto>> getAll(
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "id")  String sortBy
     ){
+        if (categoryId != null){
+            return ResponseEntity.ok(productService.getByCategory(categoryId,page,size,sortBy));
+        }
         return ResponseEntity.ok(productService.getAll(page,size,sortBy));
     }
     @PutMapping("/{id}")

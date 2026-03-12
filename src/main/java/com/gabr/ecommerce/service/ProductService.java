@@ -12,6 +12,7 @@ public interface ProductService {
         void delete(Long id);
         List<ProductDto> getAll(int page, int size, String sortBy);
     public List<ProductDto> getByName(String name);
+    List<ProductDto> getByCategory(Long CategoryId,int page, int size, String sortBy);
 }
 
 
