@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,5 +42,21 @@ public class Cart {
 
     @Version
     private Long version;
+
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "last_modified_at", nullable = false)
+    private LocalDateTime lastModifiedAt = LocalDateTime.now();
+
+    @PreUpdate
+    public void preUpdate() {
+        lastModifiedAt = LocalDateTime.now();
+    }
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
+    }
 }
 

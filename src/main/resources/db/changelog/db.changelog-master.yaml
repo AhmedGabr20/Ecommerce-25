@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/changes/002-seed-data.sql
   - include:
       file: db/changelog/changes/003-seed-product-images.sql
+  - include:
+      file: db/changelog/changes/004-Update-cart.sql
+  - include:
+      file: db/changelog/changes/005-Update-cart-constrain.sql
