@@ -13,6 +13,30 @@ import lombok.NoArgsConstructor;
 public class CategoryDto {
 
     private Long id;
-    private String name;
+
+    private String nameAr;
+    private String nameEn;
+
+    private String slug;
+
+    private String descriptionAr;
+    private String descriptionEn;
+
+    private String imageUrl;
+    private String bannerUrl;
+
+    private Long parentId;
+
+    private Integer level;
+
+    private Boolean active;
+
+    private Integer sortOrder;
+
+    private Integer productCount;
+
+    private String metaTitle;
+    private String metaDescription;
+    private String metaKeywords;
 
 }

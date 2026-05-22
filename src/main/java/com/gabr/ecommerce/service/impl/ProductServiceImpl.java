@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
                 .price(p.getPrice())
                 .stock(p.getStock())
                 .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
-                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)
+                .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
                 .primaryImageUrl(primaryUrl)
                 .images(p.getImages() == null ? null :
                         p.getImages().stream().map(this::toImageDto).toList()
@@ -207,7 +207,7 @@ public class ProductServiceImpl implements ProductService {
                 .price(p.getPrice())
                 .stock(p.getStock())
                 .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
-                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)
+                .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
                 .primaryImageUrl(primaryImageUrl)
                 .images(null)
                 .build();

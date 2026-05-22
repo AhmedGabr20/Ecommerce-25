@@ -1,9 +1,6 @@
 package com.gabr.ecommerce.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,5 +16,37 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String nameAr;
+    private String nameEn;
+
+    @Column(unique = true)
+    private String slug;
+
+    @Column(columnDefinition = "TEXT")
+    private String descriptionAr;
+
+    @Column(columnDefinition = "TEXT")
+    private String descriptionEn;
+
+    private String imageUrl;
+
+    private String bannerUrl;
+
+    private Integer level;
+
+    private Boolean active = true;
+
+    private Integer sortOrder;
+
+    private Integer productCount = 0;
+
+    private String metaTitle;
+
+    private String metaDescription;
+
+    private String metaKeywords;
+
+    @ManyToOne
+    @JoinColumn(name = "parent_id")
+    private Category parent;
 }

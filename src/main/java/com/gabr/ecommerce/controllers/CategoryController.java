@@ -2,6 +2,7 @@ package com.gabr.ecommerce.controllers;
 
 import com.gabr.ecommerce.dto.ApiResponse;
 import com.gabr.ecommerce.dto.CategoryDto;
+import com.gabr.ecommerce.dto.CategoryTreeDto;
 import com.gabr.ecommerce.service.CategoryService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,16 @@ public class CategoryController {
             @RequestParam(defaultValue = "id") String sortBy) {
         List<CategoryDto> list = categoryService.getAll(page, size, sortBy);
         return ResponseEntity.ok(ApiResponse.success("Categories fetched successfully", list));
+    }
+    @GetMapping("/tree")
+    public ResponseEntity<ApiResponse<List<CategoryTreeDto>>> getTree() {
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        "Category tree fetched successfully",
+                        categoryService.getCategoryTree()
+                )
+        );
     }
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {

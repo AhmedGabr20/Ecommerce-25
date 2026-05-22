@@ -97,7 +97,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .currency(p.getCurrency())
                 .active(p.getActive())
                 .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
-                .categoryName(p.getCategory() != null ? p.getCategory().getName() : null)
+                .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())
                 .build();
