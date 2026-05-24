@@ -116,6 +116,19 @@ public class AdminProductServiceImpl implements AdminProductService {
     }
 
     private AdminProductDto toDto(Product p) {
+        String imageUrl = null;
+
+        if (p.getImages() != null && !p.getImages().isEmpty()) {
+
+            imageUrl = p.getImages()
+                    .stream()
+                    .filter(ProductImage::getPrimaryImage)
+                    .findFirst()
+                    .map(ProductImage::getUrl)
+                    .orElse(
+                            p.getImages().get(0).getUrl()
+                    );
+        }
         return AdminProductDto.builder()
                 .id(p.getId())
                 .nameEn(p.getNameEn())
@@ -133,6 +146,7 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
                 .createdAt(p.getCreatedAt())
                 .updatedAt(p.getUpdatedAt())
+                .imageUrl(imageUrl)
                 .build();
     }
 

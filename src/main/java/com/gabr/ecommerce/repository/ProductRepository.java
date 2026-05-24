@@ -37,8 +37,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     );
 
     @Query("""
-select p from Product p
-left join p.category c
+select distinct p from Product p
+left join fetch p.category c
+left join fetch p.images i
 where (:q = '' 
         or lower(p.nameAr) like lower(concat('%', :q, '%'))
         or lower(p.nameEn) like lower(concat('%', :q, '%'))
