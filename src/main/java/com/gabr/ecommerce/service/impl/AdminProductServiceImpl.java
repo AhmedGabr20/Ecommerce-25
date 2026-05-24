@@ -3,12 +3,15 @@ package com.gabr.ecommerce.service.impl;
 import com.gabr.ecommerce.dto.admin.*;
 import com.gabr.ecommerce.entity.Category;
 import com.gabr.ecommerce.entity.Product;
+import com.gabr.ecommerce.entity.ProductImage;
 import com.gabr.ecommerce.repository.CategoryRepository;
 import com.gabr.ecommerce.repository.ProductRepository;
 import com.gabr.ecommerce.service.AdminProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,21 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .category(category)
                 .build();
 
+        //  DTO -> Entity
+        List<ProductImage> images = req.getImages()
+                .stream()
+                .map(imgDto -> ProductImage.builder()
+                        .product(p)
+                        .url(imgDto.getUrl())
+                        .altEn(imgDto.getAltEn())
+                        .altAr(imgDto.getAltAr())
+                        .primaryImage(imgDto.getPrimaryImage())
+                        .sortOrder(imgDto.getSortOrder())
+                        .build())
+                .toList();
+
+        p.setImages(images);
+
         return toDto(productRepository.save(p));
     }
 
@@ -70,6 +88,21 @@ public class AdminProductServiceImpl implements AdminProductService {
         p.setCurrency(req.getCurrency());
         p.setActive(req.getActive());
         p.setCategory(category);
+
+        //  DTO -> Entity
+        List<ProductImage> images = req.getImages()
+                .stream()
+                .map(imgDto -> ProductImage.builder()
+                        .product(p)
+                        .url(imgDto.getUrl())
+                        .altEn(imgDto.getAltEn())
+                        .altAr(imgDto.getAltAr())
+                        .primaryImage(imgDto.getPrimaryImage())
+                        .sortOrder(imgDto.getSortOrder())
+                        .build())
+                .toList();
+
+        p.setImages(images);
 
         return toDto(productRepository.save(p));
     }

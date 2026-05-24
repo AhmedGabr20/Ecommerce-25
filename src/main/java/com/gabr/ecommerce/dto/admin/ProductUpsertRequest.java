@@ -1,9 +1,11 @@
 package com.gabr.ecommerce.dto.admin;
 
+import com.gabr.ecommerce.dto.ProductImageDto;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data @AllArgsConstructor @NoArgsConstructor @Builder
 public class ProductUpsertRequest {
@@ -39,4 +41,8 @@ public class ProductUpsertRequest {
     private String currency; // default "EGP" in entity
 
     private Boolean active; // default true in entity
+
+    // Images
+    private String primaryImageUrl;
+    private List<ProductImageDto> images;
 }

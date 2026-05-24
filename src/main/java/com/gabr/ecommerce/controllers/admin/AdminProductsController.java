@@ -5,6 +5,7 @@ import com.gabr.ecommerce.dto.admin.*;
 import com.gabr.ecommerce.service.AdminProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 public class AdminProductsController {
 
     private final AdminProductService adminProductService;
+
+    @Value("${app.base-url}")
+    String baseUrl ;
 
     @GetMapping
     public ApiResponse<Page<AdminProductDto>> list(

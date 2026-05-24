@@ -55,4 +55,11 @@ and (:active is null or p.active = :active)
 
     Page<Product> findByCategory(Category category, Pageable pageable);
 
+    @Query("""
+    select distinct p from Product p
+    left join fetch p.images
+    left join fetch p.category
+""")
+    Page<Product> findAllWithImages(Pageable pageable);
+
 }

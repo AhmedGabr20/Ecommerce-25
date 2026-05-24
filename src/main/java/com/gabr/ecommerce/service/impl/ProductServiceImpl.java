@@ -61,7 +61,8 @@ public class ProductServiceImpl implements ProductService {
                 .stock(p.getStock())
                 .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
                 .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
-                .primaryImageUrl(primaryUrl)
+                .createdAt(p.getCreatedAt())
+                .updatedAt(p.getUpdatedAt())
                 .images(p.getImages() == null ? null :
                         p.getImages().stream().map(this::toImageDto).toList()
                 )
@@ -134,14 +135,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public List<ProductDto> getAll(int page, int size, String sortBy) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, sortBy));
-        return productRepository.findAll(pageable)
+        return productRepository.findAllWithImages(pageable)
                 .getContent()
                 .stream()
-                .map(p -> {
-                    String primaryUrl = productImageRepository.findOrderedUrls(p.getId())
-                            .stream().findFirst().orElse(null);
-                    return toDtoList(p, primaryUrl);
-                })
+                .map(this::toDto)
                 .toList();
     }
 
@@ -208,8 +205,13 @@ public class ProductServiceImpl implements ProductService {
                 .stock(p.getStock())
                 .categoryId(p.getCategory() != null ? p.getCategory().getId() : null)
                 .categoryName(p.getCategory() != null ? p.getCategory().getNameEn() : null)
-                .primaryImageUrl(primaryImageUrl)
-                .images(null)
+                .images(
+                        primaryImageUrl == null ? List.of() :
+                                List.of(ProductImageDto.builder()
+                                        .url(primaryImageUrl)
+                                        .primaryImage(true)
+                                        .build())
+                )
                 .build();
     }
 
