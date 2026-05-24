@@ -39,11 +39,13 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("""
 select p from Product p
 left join p.category c
-where (:q = '' or
-       lower(p.nameEn) like lower(concat('%', :q, '%')) or
-       lower(p.nameAr) like lower(concat('%', :q, '%')) or
-       lower(p.sku)    like lower(concat('%', :q, '%')) or
-       lower(p.slug)   like lower(concat('%', :q, '%'))
+where (:q = '' 
+        or lower(p.nameAr) like lower(concat('%', :q, '%'))
+        or lower(p.nameEn) like lower(concat('%', :q, '%'))
+        or lower(p.descriptionEn) like lower(concat('%', :q, '%'))
+        or lower(p.descriptionAr) like lower(concat('%', :q, '%'))
+        or lower(p.sku) like lower(concat('%', :q, '%'))
+        or lower(p.slug) like lower(concat('%', :q, '%'))
 )
 and (:categoryId is null or c.id = :categoryId)
 and (:active is null or p.active = :active)
