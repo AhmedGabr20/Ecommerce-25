@@ -9,4 +9,9 @@ public interface AdminProductService {
     AdminProductDto create(ProductUpsertRequest req);
     AdminProductDto update(Long id, ProductUpsertRequest req);
     void delete(Long id);
+    byte[] exportPdf(
+            String q,
+            Long categoryId,
+            Boolean active
+    );
 }

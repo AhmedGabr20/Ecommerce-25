@@ -1,7 +1,7 @@
 package com.gabr.ecommerce.service.impl;
 
 import com.gabr.ecommerce.entity.OrderItem;
-import com.gabr.ecommerce.reports.OrderInvoicePdf;
+//import com.gabr.ecommerce.reports.OrderInvoicePdf;
 import com.gabr.ecommerce.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -28,7 +28,8 @@ public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
     private final TemplateEngine templateEngine;
-    private final OrderInvoicePdf orderInvoicePdf;
+    // TODO : add OrderInvoicePdf With itext 7
+    //private final OrderInvoicePdf orderInvoicePdf;
 
 
 //    @Override
@@ -114,7 +115,7 @@ public class EmailServiceImpl implements EmailService {
 
             // 2️⃣ إنشاء الفاتورة PDF
             ByteArrayOutputStream pdfOutput = new ByteArrayOutputStream();
-            orderInvoicePdf.createOrderInvoicePdf(orderId, total, items, pdfOutput);
+        //    orderInvoicePdf.createOrderInvoicePdf(orderId, total, items, pdfOutput);
 
             // 3️⃣ إعداد الرسالة بالإيميل
             MimeMessage message = mailSender.createMimeMessage();

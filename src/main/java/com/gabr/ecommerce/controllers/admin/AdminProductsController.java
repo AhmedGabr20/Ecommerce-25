@@ -7,6 +7,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +53,40 @@ public class AdminProductsController {
     public ApiResponse<Void> delete(@PathVariable Long id) {
         adminProductService.delete(id);
         return ApiResponse.success("Deleted", null);
+    }
+
+
+    // Reports
+
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportPdf(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean active
+    ) {
+
+        byte[] pdf = adminProductService.exportPdf(
+                q,
+                categoryId,
+                active
+        );
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=products.pdf"
+                )
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportExcel(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return null;
     }
 }
 

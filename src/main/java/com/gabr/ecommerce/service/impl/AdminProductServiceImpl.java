@@ -7,10 +7,18 @@ import com.gabr.ecommerce.entity.ProductImage;
 import com.gabr.ecommerce.repository.CategoryRepository;
 import com.gabr.ecommerce.repository.ProductRepository;
 import com.gabr.ecommerce.service.AdminProductService;
+import com.itextpdf.html2pdf.ConverterProperties;
+import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
+import com.itextpdf.layout.font.FontProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import java.io.ByteArrayOutputStream;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
@@ -115,6 +123,71 @@ public class AdminProductServiceImpl implements AdminProductService {
         productRepository.deleteById(id);
     }
 
+    @Override
+    public byte[] exportPdf(
+            String q,
+            Long categoryId,
+            Boolean active
+    ) {
+
+        Pageable pageable = Pageable.unpaged();
+
+        List<Product> products =
+                productRepository
+                        .adminSearch(
+                                q == null ? "" : q,
+                                categoryId,
+                                active,
+                                pageable
+                        )
+                        .getContent();
+
+        try {
+
+            String html = buildProductsHtml(
+                    products,
+                    q
+            );
+
+            ByteArrayOutputStream target =
+                    new ByteArrayOutputStream();
+
+            ConverterProperties properties =
+                    new ConverterProperties();
+
+            FontProvider fontProvider =
+                    new DefaultFontProvider(false, false, false);
+
+            fontProvider.addFont(
+                    com.itextpdf.io.font.FontProgramFactory.createFont(
+                            getClass()
+                                    .getResource("/fonts/Dubai-Regular.ttf")
+                                    .getPath()
+                    )
+            );
+
+            properties.setFontProvider(fontProvider);
+            properties.setCharset("UTF-8");
+        //    properties.setBaseUri("src/main/resources/");
+            properties.setImmediateFlush(false);
+
+            HtmlConverter.convertToPdf(
+                    html,
+                    target,
+                    properties
+            );
+
+            return target.toByteArray();
+
+        } catch (Exception e) {
+
+            throw new RuntimeException(
+                    "Failed to export PDF",
+                    e
+            );
+        }
+    }
+
     private AdminProductDto toDto(Product p) {
         String imageUrl = null;
 
@@ -150,4 +223,66 @@ public class AdminProductServiceImpl implements AdminProductService {
                 .build();
     }
 
+    private String buildProductsHtml(
+            List<Product> products,
+            String q
+    ) throws IOException {
+
+        StringBuilder rows = new StringBuilder();
+
+        for (Product p : products) {
+
+            rows.append("""
+            <tr>
+                <td>%s</td>
+                <td>%s</td>
+                <td>%s</td>
+                <td>%s ج.م</td>
+                <td>%s</td>
+            </tr>
+        """.formatted(
+                    p.getId(),
+                    p.getNameAr(),
+                    p.getSku(),
+                    p.getPrice(),
+                    p.getStock()
+            ));
+        }
+
+        InputStream inputStream = getClass()
+                .getResourceAsStream(
+                        "/templates/products-report.html"
+                );
+
+        if (inputStream == null) {
+            throw new RuntimeException(
+                    "Template not found"
+            );
+        }
+
+        String html = new String(
+                inputStream.readAllBytes(),
+                StandardCharsets.UTF_8
+        );
+
+        return html
+                .replace(
+                        "{{ROWS}}",
+                        rows.toString()
+                )
+                .replace(
+                        "{{DATE}}",
+                        java.time.LocalDateTime.now().toString()
+                )
+                .replace(
+                        "{{TOTAL}}",
+                        String.valueOf(products.size())
+                )
+                .replace(
+                        "{{SEARCH}}",
+                        q == null || q.isBlank()
+                                ? "كل المنتجات"
+                                : q
+                );
+    }
 }
