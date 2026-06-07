@@ -36,7 +36,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**"
-                                ,"/api/auth/register","/api/auth/login", "/api/auth/refresh","/h2-console/**").permitAll()
+                                ,"/api/auth/register","/api/auth/login", "/api/auth/refresh","/h2-console/**"
+                                ,"/uploads/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**","/api/categories/**").permitAll()
                         .requestMatchers( "/api/cart/**").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
