@@ -92,7 +92,10 @@ public class AuthController {
         }
 
         // 1) validate against DB expiry
-        refreshTokenService.validateRefreshToken(refreshToken);
+        if (!refreshTokenService.validateRefreshToken(refreshToken)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(ApiResponse.error("Invalid refresh token"));
+        }
 
         // 2) parse jwt
         String username = jwtService.extractUsername(refreshToken);
