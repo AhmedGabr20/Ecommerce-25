@@ -25,14 +25,14 @@ public class AdminOrdersController {
     @GetMapping
     public ApiResponse<Page<AdminOrderDto>> list(
             @RequestParam(required = false) OrderStatus status,
-            @RequestParam(required = false) String username,
+            @RequestParam(required = false) String email,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String dir
     ) {
         return ApiResponse.success("OK",
-                adminOrderService.list(status, username, page, size, sortBy, dir)
+                adminOrderService.list(status, email, page, size, sortBy, dir)
         );
     }
 

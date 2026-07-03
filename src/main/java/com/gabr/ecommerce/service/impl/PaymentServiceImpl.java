@@ -54,7 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
         //order.setStatus(OrderStatus.PAID);
         //orderRepository.save(order);
         // send email notification
-        emailService.sendOrderConfirmation(order.getUser().getUsername(), order.getId(), order.getTotalPrice(),order.getItems());
+        emailService.sendOrderConfirmation(order.getUser().getEmail(), order.getId(), order.getTotalPrice(),order.getItems());
         return PaymentDto.builder()
                 .id(save.getId())
                 .orderId(save.getOrder().getId())

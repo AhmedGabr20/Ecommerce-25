@@ -1,6 +1,6 @@
 package com.gabr.ecommerce.repository;
 
-import com.gabr.ecommerce.dto.RefreshToken;
+import com.gabr.ecommerce.entity.RefreshToken;
 import com.gabr.ecommerce.entity.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 

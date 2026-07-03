@@ -235,7 +235,7 @@ public class CartServiceImpl implements CartService {
         // Logged-in user
         if (principal != null) {
 
-            AppUser user = userRepository.findByUsername(principal.getName())
+            AppUser user = userRepository.findByEmail(principal.getName())
                     .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
             Cart userCart = cartRepository.findByUser(user).orElse(null);

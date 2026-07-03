@@ -29,12 +29,12 @@ public class AdminOrderServiceImpl implements AdminOrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<AdminOrderDto> list(OrderStatus status, String username, int page, int size, String sortBy, String dir) {
+    public Page<AdminOrderDto> list(OrderStatus status, String email, int page, int size, String sortBy, String dir) {
         Sort sort = "desc".equalsIgnoreCase(dir) ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
         OrderStatus s = (status == null ) ? null : status;
-        String u = (username == null || username.isBlank()) ? null : username;
+        String u = (email == null || email.isBlank()) ? null : email;
 
         Page<Order> orders = adminOrderRepository.search(s,u,pageable);
         return orders.map(this::toDtoBasic);
@@ -79,7 +79,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         return AdminOrderDto.builder()
                 .id(o.getId())
                 .userId(o.getUser() != null ? o.getUser().getId() : null)
-                .username(o.getUser() != null ? o.getUser().getUsername() : null)
+                .username(o.getUser() != null ? o.getUser().getEmail() : null)
                 .createdAt(o.getCreatedAt())
                 .totalPrice(o.getTotalPrice())
                 .status(o.getStatus())
@@ -91,7 +91,7 @@ public class AdminOrderServiceImpl implements AdminOrderService {
         return AdminOrderDto.builder()
                 .id(o.getId())
                 .userId(o.getUser() != null ? o.getUser().getId() : null)
-                .username(o.getUser() != null ? o.getUser().getUsername() : null)
+                .username(o.getUser() != null ? o.getUser().getEmail() : null)
                 .createdAt(o.getCreatedAt())
                 .totalPrice(o.getTotalPrice())
                 .status(o.getStatus())

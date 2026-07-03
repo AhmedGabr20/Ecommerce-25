@@ -3,9 +3,10 @@ package com.gabr.ecommerce.controllers;
 import com.gabr.ecommerce.dto.ApiResponse;
 import com.gabr.ecommerce.dto.AuthRequest;
 import com.gabr.ecommerce.dto.AuthResponse;
-import com.gabr.ecommerce.dto.RefreshToken;
+import com.gabr.ecommerce.entity.RefreshToken;
 import com.gabr.ecommerce.entity.AppUser;
 import com.gabr.ecommerce.entity.Role;
+import com.gabr.ecommerce.repository.RoleRepository;
 import com.gabr.ecommerce.repository.UserRepository;
 import com.gabr.ecommerce.security.JwtService;
 import com.gabr.ecommerce.service.RefreshTokenService;
@@ -24,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,17 +37,21 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
     private final EmailServiceImpl emailService;
+    private final RoleRepository roleRepository;
 
     @Operation(summary = "Login user", security = @SecurityRequirement(name = "none"))
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> registerUser(@Valid @RequestBody AuthRequest request) {
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("Role USER not found"));
+
         AppUser user = AppUser.builder()
-                .username(request.getUsername())
+                .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .roles(Set.of(userRole))
                 .build();
         userRepository.save(user);
-        emailService.sendWelcomeEmail(request.getUsername(),"Ahmed Gabr");
+        emailService.sendWelcomeEmail(request.getEmail(),request.getEmail());
 
         String accessToken = jwtService.generateAccessToken(user);
     //    String refreshToken = jwtService.generateRefreshToken(user);
@@ -57,8 +63,13 @@ public class AuthController {
                                 .id(user.getId())
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken.getToken())
-                                .username(user.getUsername())
-                                .role(user.getRole())
+                                .email(user.getEmail())
+                                .roles(
+                                        user.getRoles()
+                                                .stream()
+                                                .map(Role::getName)
+                                                .toList()
+                                )
                                 .build())
         );
     }
@@ -66,9 +77,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        AppUser user = userRepository.findByUsername(request.getUsername())
+        AppUser user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         String accessToken = jwtService.generateAccessToken(user);
@@ -79,8 +90,13 @@ public class AuthController {
                                 .id(user.getId())
                                 .accessToken(accessToken)
                                 .refreshToken(refreshToken.getToken())
-                                .username(user.getUsername())
-                                .role(user.getRole())
+                                .email(user.getEmail())
+                                .roles(
+                                        user.getRoles()
+                                                .stream()
+                                                .map(Role::getName)
+                                                .toList()
+                                )
                                 .build())
         );
     }
@@ -98,13 +114,13 @@ public class AuthController {
         }
 
         // 2) parse jwt
-        String username = jwtService.extractUsername(refreshToken);
+        String email = jwtService.extractEmail(refreshToken);
 
-        AppUser user = userRepository.findByUsername(username)
+        AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
         // 3) validate jwt matches username + not expired
-        if (!jwtService.isTokenValid(refreshToken, new User(user.getUsername(), user.getPassword(), List.of()))) {
+        if (!jwtService.isTokenValid(refreshToken, new User(user.getEmail(), user.getPassword(), List.of()))) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Invalid refresh token"));
         }
@@ -117,15 +133,20 @@ public class AuthController {
                                 .id(user.getId())
                                 .accessToken(newAccessToken)
                                 .refreshToken(refreshToken)
-                                .username(user.getUsername())
-                                .role(user.getRole())
+                                .email(user.getEmail())
+                                .roles(
+                                        user.getRoles()
+                                                .stream()
+                                                .map(Role::getName)
+                                                .toList()
+                                )
                                 .build())
         );
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout(@RequestParam String username) {
-        AppUser user = userRepository.findByUsername(username)
+    public ResponseEntity<ApiResponse<String>> logout(@RequestParam String email) {
+        AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         refreshTokenService.deleteByUser(user);
         return ResponseEntity.ok(ApiResponse.success("User logged out successfully", null));

@@ -1,21 +1,25 @@
 package com.gabr.ecommerce.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "roles")
+@Table(name = "user_address")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role {
+public class UserAddress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
+
+    private String city;
+
+    private String street;
 }

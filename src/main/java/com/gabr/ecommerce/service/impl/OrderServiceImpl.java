@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalPrice(cart.getTotalPrice());
         Order SavedOrder = orderRepository.save(order);
-        camundaOrderProcessService.startOrderProcess(SavedOrder.getId(),SavedOrder.getUser().getUsername(),SavedOrder.getUser().getUsername());
+        camundaOrderProcessService.startOrderProcess(SavedOrder.getId(),SavedOrder.getUser().getEmail(),SavedOrder.getUser().getEmail());
     //    cartRepository.delete(cart);
 
         // ✅ clear cart instead of deleting it

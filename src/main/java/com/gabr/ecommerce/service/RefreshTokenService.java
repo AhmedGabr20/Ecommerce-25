@@ -1,6 +1,6 @@
 package com.gabr.ecommerce.service;
 
-import com.gabr.ecommerce.dto.RefreshToken;
+import com.gabr.ecommerce.entity.RefreshToken;
 import com.gabr.ecommerce.entity.AppUser;
 
 public interface RefreshTokenService {

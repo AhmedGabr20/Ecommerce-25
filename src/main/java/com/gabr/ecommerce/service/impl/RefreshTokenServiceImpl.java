@@ -1,6 +1,6 @@
 package com.gabr.ecommerce.service.impl;
 
-import com.gabr.ecommerce.dto.RefreshToken;
+import com.gabr.ecommerce.entity.RefreshToken;
 import com.gabr.ecommerce.entity.AppUser;
 import com.gabr.ecommerce.repository.RefreshTokenRepository;
 import com.gabr.ecommerce.repository.UserRepository;

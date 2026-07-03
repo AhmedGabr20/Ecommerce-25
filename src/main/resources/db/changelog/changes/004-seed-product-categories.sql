@@ -1,21 +1,43 @@
+--changeset gabr:004-seed-product-categories
 
---changeset gabr:002-seed-admin
+INSERT INTO category
+(
+    name_ar,
+    name_en,
+    slug,
+    active,
+    level,
+    product_count
+)
+VALUES
+    (
+        'أدوات كهربائية',
+        'Power Tools',
+        'power-tools',
+        TRUE,
+        1,
+        0
+    ),
+    (
+        'أدوات يدوية',
+        'Hand Tools',
+        'hand-tools',
+        TRUE,
+        1,
+        0
+    ),
+    (
+        'إكسسوارات',
+        'Accessories',
+        'accessories',
+        TRUE,
+        1,
+        0
+    );
 
-INSERT INTO app_user (username, password, role)
-VALUES (
-           'ahmedaligabr.20@gmail.com',
-           '$2a$10$7QYxZl9YuqbWtaXDpUe1IuP9b5J1nJ3H9xkKj2l9Zk9Z0Yz9y9y9y',
-           'ADMIN'
-       );
-
---changeset gabr:003-seed-categories
-
-INSERT INTO category (name) VALUES
-                                ('Power Tools'),
-                                ('Hand Tools'),
-                                ('Accessories');
-
---changeset gabr:004-seed-products
+------------------------------------------------------------
+-- products
+------------------------------------------------------------
 
 INSERT INTO products
 (name_en,name_ar,description_en,description_ar,slug,sku,brand,price,stock,category_id)

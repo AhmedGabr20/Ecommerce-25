@@ -7,7 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<AppUser,Long> {
-    Optional<AppUser> findByUsername(String username);
+
+    Optional<AppUser> findByEmail(String email);
+
+    boolean existsByEmail(String email);
 
     @Query(" select count(u) from AppUser u")
     long countAll();

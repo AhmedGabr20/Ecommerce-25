@@ -1,6 +1,5 @@
-package com.gabr.ecommerce.dto;
+package com.gabr.ecommerce.entity;
 
-import com.gabr.ecommerce.entity.AppUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,11 +18,17 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(
+            nullable = false,
+            unique = true,
+            length = 1000
+    )
     private String token;
+
     private Instant expiryDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private AppUser  user;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private AppUser user;
 
 }
