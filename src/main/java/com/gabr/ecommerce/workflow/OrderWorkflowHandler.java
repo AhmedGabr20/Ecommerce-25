@@ -19,6 +19,32 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
 
     protected final OrderRepository orderRepository;
 
+    @Override
+    public void execute(ExternalTask task, ExternalTaskService service) {
+        try {
+            process(task, service);
+
+            service.complete(task);
+        } catch (BusinessException e) {
+            if (e.getCode() == ErrorCode.ORDER_NOT_FOUND) {
+                service.handleFailure(
+                        task,
+                        "Order Not Found",
+                        "The order with ID provided in workflow variables does not exist in the DB. Probably DB was reset.",
+                        0, // Retries = 0 لمنع التكرار اللانهائي
+                        0  // Retry Timeout
+                );
+            } else {
+                service.handleFailure(task, e.getMessage(), e.toString(), task.getRetries() == null ? 3 : task.getRetries() - 1, 5000);
+            }
+        } catch (Exception e) {
+            int remainingRetries = task.getRetries() == null ? 3 : task.getRetries() - 1;
+            service.handleFailure(task, "Unexpected Error", e.getMessage(), remainingRetries, 5000);
+        }
+    }
+
+    protected abstract void process(ExternalTask task, ExternalTaskService service);
+
     protected Long getOrderId(ExternalTask task) {
         Object v = task.getVariable("orderId");
         if (v instanceof Number n) return n.longValue();
@@ -43,10 +69,8 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
         }
 
         @Override
-        public void execute(ExternalTask task, ExternalTaskService service) {
-            Long orderId = getOrderId(task);
-            setStatus(orderId, OrderStatus.NEW);
-            service.complete(task);
+        protected void process(ExternalTask task, ExternalTaskService service) {
+            setStatus(getOrderId(task), OrderStatus.NEW);
         }
     }
 
@@ -58,10 +82,8 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
         }
 
         @Override
-        public void execute(ExternalTask task, ExternalTaskService service) {
-            Long orderId = getOrderId(task);
-            setStatus(orderId, OrderStatus.PAID);
-            service.complete(task);
+        protected void process(ExternalTask task, ExternalTaskService service) {
+            setStatus(getOrderId(task), OrderStatus.SHIPPED);
         }
     }
 
@@ -73,10 +95,8 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
         }
 
         @Override
-        public void execute(ExternalTask task, ExternalTaskService service) {
-            Long orderId = getOrderId(task);
-            setStatus(orderId, OrderStatus.SHIPPED);
-            service.complete(task);
+        protected void process(ExternalTask task, ExternalTaskService service) {
+            setStatus(getOrderId(task), OrderStatus.PAID);
         }
     }
 
@@ -88,10 +108,8 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
         }
 
         @Override
-        public void execute(ExternalTask task, ExternalTaskService service) {
-            Long orderId = getOrderId(task);
-            setStatus(orderId, OrderStatus.COMPLETED);
-            service.complete(task);
+        protected void process(ExternalTask task, ExternalTaskService service) {
+            setStatus(getOrderId(task), OrderStatus.COMPLETED);
         }
     }
 
@@ -103,10 +121,8 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
         }
 
         @Override
-        public void execute(ExternalTask task, ExternalTaskService service) {
-            Long orderId = getOrderId(task);
-            setStatus(orderId, OrderStatus.CANCELED);
-            service.complete(task);
+        protected void process(ExternalTask task, ExternalTaskService service) {
+            setStatus(getOrderId(task), OrderStatus.CANCELED);
         }
     }
 }
