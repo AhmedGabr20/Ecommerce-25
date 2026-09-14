@@ -7,4 +7,6 @@ databaseChangeLog:
       file: db/changelog/changes/003-seed-admin.sql
   - include:
       file: db/changelog/changes/004-seed-product-categories.sql
+  - include:
+      file: db/changelog/changes/005_add_rbac_and_profile_tables.sql
 

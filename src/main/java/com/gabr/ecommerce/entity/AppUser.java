@@ -74,4 +74,13 @@ public class AppUser {
             orphanRemoval = true
     )
     private List<RefreshToken> refreshTokens = new ArrayList<>();
+
+    @Column(name = "phone_number", length = 20)
+    private String phoneNumber;
+
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive = true;
 }

@@ -8,6 +8,10 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<AppUser,Long> {
 
+    @Query("SELECT DISTINCT u FROM AppUser u " +
+            "LEFT JOIN FETCH u.roles r " +
+            "LEFT JOIN FETCH r.permissions " +
+            "WHERE u.email = :email")
     Optional<AppUser> findByEmail(String email);
 
     boolean existsByEmail(String email);

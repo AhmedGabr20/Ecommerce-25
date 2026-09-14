@@ -24,6 +24,7 @@ public class AdminMetricsController {
     private final AdminMetricsService adminMetricsService;
 
     @GetMapping("/summary")
+    @PreAuthorize("hasAuthority('PRODUCT_WRITE')")
     public ApiResponse<AdminSummaryDto> summary() {
         return ApiResponse.success("OK", adminMetricsService.summary());
     }
