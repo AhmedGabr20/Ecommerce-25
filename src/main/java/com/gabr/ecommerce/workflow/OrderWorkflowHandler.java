@@ -83,7 +83,7 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
 
         @Override
         protected void process(ExternalTask task, ExternalTaskService service) {
-            setStatus(getOrderId(task), OrderStatus.SHIPPED);
+            setStatus(getOrderId(task), OrderStatus.PAID);
         }
     }
 
@@ -96,7 +96,7 @@ public abstract class OrderWorkflowHandler implements ExternalTaskHandler {
 
         @Override
         protected void process(ExternalTask task, ExternalTaskService service) {
-            setStatus(getOrderId(task), OrderStatus.PAID);
+            setStatus(getOrderId(task), OrderStatus.SHIPPED);
         }
     }
 

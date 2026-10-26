@@ -8,7 +8,8 @@ import java.math.BigDecimal;
 public class AdminOrderItemDto {
     private Long id;
     private Long productId;
-    private String productName;
+    private String productNameAr;
+    private String productNameEn;
     private int quantity;
     private BigDecimal price;
 }

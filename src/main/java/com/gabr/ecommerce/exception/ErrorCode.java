@@ -5,5 +5,6 @@ public enum ErrorCode {
     ORDER_NOT_FOUND,
     ORDER_ALREADY_PAID,
     INVALID_PAYMENT_METHOD,
-    CART_EMPTY
+    CART_EMPTY,
+    USER_DISABLED
 }

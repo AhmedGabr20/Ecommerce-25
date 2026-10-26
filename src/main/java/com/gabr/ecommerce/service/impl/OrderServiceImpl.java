@@ -1,22 +1,21 @@
 package com.gabr.ecommerce.service.impl;
 
+import com.gabr.ecommerce.entity.*;
 import com.gabr.ecommerce.service.camunda.CamundaOrderProcessService;
 import com.gabr.ecommerce.constant.OrderStatus;
 import com.gabr.ecommerce.dto.OrderDto;
 import com.gabr.ecommerce.dto.OrderItemDto;
-import com.gabr.ecommerce.entity.AppUser;
-import com.gabr.ecommerce.entity.Cart;
-import com.gabr.ecommerce.entity.Order;
-import com.gabr.ecommerce.entity.OrderItem;
 import com.gabr.ecommerce.exception.BusinessException;
 import com.gabr.ecommerce.exception.ErrorCode;
 import com.gabr.ecommerce.repository.CartRepository;
 import com.gabr.ecommerce.repository.OrderRepository;
 import com.gabr.ecommerce.repository.UserRepository;
 import com.gabr.ecommerce.service.OrderService;
+import com.gabr.ecommerce.service.specifications.OrderSpecifications;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -54,14 +53,36 @@ public class OrderServiceImpl implements OrderService {
         order.setCreatedAt(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
 
+        // 2. Calculate total from cart items
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (CartItem cartItem : cart.getItems()) {
+
+            BigDecimal itemTotal = cartItem.getUnitPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+
+            totalPrice = totalPrice.add(itemTotal);
+
+            // 3. Create OrderItem
+            OrderItem orderItem = new OrderItem();
+            orderItem.setOrder(order);
+            orderItem.setProduct(cartItem.getProduct());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setPrice(cartItem.getUnitPrice());
+
+            // 4. Add item to order collection
+            order.getItems().add(orderItem);
+        }
+
         order.setTotalPrice(cart.getTotalPrice());
         Order SavedOrder = orderRepository.save(order);
         camundaOrderProcessService.startOrderProcess(SavedOrder.getId(),SavedOrder.getUser().getEmail(),SavedOrder.getUser().getEmail());
-    //    cartRepository.delete(cart);
 
-        // ✅ clear cart instead of deleting it
+        // 7. Clear cart after successful order creation
         cart.getItems().clear();
         cart.setTotalPrice(BigDecimal.ZERO);
+        cart.setCoupon(null);
+        cart.setDiscountAmount(BigDecimal.ZERO);
         cartRepository.save(cart);
 
         return toDto(SavedOrder);
@@ -76,6 +97,23 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto getOrderById(Long orderId) {
         return orderRepository.findById(orderId).map(this::toDto).orElseThrow(() -> new EntityNotFoundException("Order not found"));
     }
+
+    public List<Order> search(OrderStatus status,
+                              BigDecimal minAmount,
+                              Long customerId) {
+
+        Specification<Order> spec = Specification
+                .allOf(
+                        OrderSpecifications.hasStatus(status),
+                        OrderSpecifications.totalPriceGreaterThan(minAmount),
+                        OrderSpecifications.customerIdEquals(customerId)
+                );
+
+        return orderRepository.findAll(spec);
+    }
+
+
+
     private OrderDto toDto(Order order) {
         return OrderDto.builder()
                 .id(order.getId())
